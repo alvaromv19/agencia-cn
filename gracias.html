@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siguiente Paso | Creamos Negocios</title>
+
+    <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
+    <link rel="preload" href="https://scripts.converteai.net/ccd6abe5-9eed-4f1f-aa58-4573d241489b/players/6947357f76990ab694f71c65/v4/player.js" as="script">
+    <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
+    <link rel="dns-prefetch" href="https://cdn.converteai.net">
+    <link rel="dns-prefetch" href="https://scripts.converteai.net">
+    <link rel="dns-prefetch" href="https://images.converteai.net">
+    <link rel="dns-prefetch" href="https://m3u8.vturb.net">
+    <link rel="dns-prefetch" href="https://api.vturb.com.br">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 900px;
+            padding: 40px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            background: rgba(34, 116, 242, 0.25); 
+            filter: blur(100px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* --- ESTILOS COMPARTIDOS --- */
+        .headline { font-size: 2.2rem; font-weight: 800; line-height: 1.25; letter-spacing: -0.5px; margin-bottom: 15px; }
+        .text-orange { color: #f25522; }
+        .sub-headline { font-size: 1.1rem; color: #8892b0; font-weight: 400; margin-bottom: 40px; }
+        .logo { max-width: 140px; height: auto; margin-bottom: 30px; }
+
+        /* --- ESTILOS ESTADO 1 (NO CONFIRMADO) --- */
+        .step-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .step-title span { font-weight: 400; font-style: italic; color: #e2e8f0; }
+        .video-box { width: 100%; max-width: 800px; margin: 0 auto 40px auto; background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .instructions-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 30px; max-width: 800px; margin: 0 auto; }
+        .instructions-box p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #cbd5e1; }
+        .highlight-bold { font-weight: 800; color: #ffffff; }
+        .highlight-red { font-weight: 800; color: #ff4757; }
+
+        /* --- ESTILOS ESTADO 2 (NUTRICIÓN) --- */
+        .lead-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 35px; margin-bottom: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 800px; margin-left: auto; margin-right: auto; }
+        .lead-box p { font-size: 1.1rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px; }
+        .lead-box p:last-child { margin-bottom: 0; }
+
+        /* --- BOTONES --- */
+        .btn-whatsapp { display: flex; justify-content: center; align-items: center; gap: 12px; width: 100%; max-width: 400px; margin: 30px auto 0 auto; padding: 18px 25px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #ffffff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; text-decoration: none; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.4); transition: all 0.3s ease; border: 1px solid #28E16D; }
+        .btn-whatsapp:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px -5px rgba(37, 211, 102, 0.6); background: linear-gradient(135deg, #28E16D 0%, #25D366 100%); }
+        .btn-whatsapp svg { width: 28px; height: 28px; fill: currentColor; }
+
+        .btn-instagram { display: flex; justify-content: center; align-items: center; gap: 12px; width: 100%; max-width: 400px; margin: 0 auto; padding: 18px 25px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: #ffffff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; text-decoration: none; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(220, 39, 67, 0.4); transition: all 0.3s ease; }
+        .btn-instagram:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px -5px rgba(220, 39, 67, 0.6); background: linear-gradient(45deg, #bc1888 0%, #cc2366 25%, #dc2743 50%, #e6683c 75%, #f09433 100%); }
+        .btn-instagram svg { width: 28px; height: 28px; fill: currentColor; }
+
+        @media (max-width: 768px) {
+            .headline { font-size: 1.8rem; }
+            .sub-headline { font-size: 1rem; margin-bottom: 30px; }
+            .step-title { font-size: 1.3rem; flex-direction: column; gap: 5px; }
+            .content { padding: 30px 15px 40px; } 
+            .instructions-box, .lead-box { padding: 25px 15px; }
+            .instructions-box p, .lead-box p { font-size: 1rem; }
+            .btn-whatsapp, .btn-instagram { font-size: 1rem; padding: 15px 20px; }
+        }
+
+        .footer { width: 100%; padding: 25px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.03); margin-top: auto; }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+
+        <div id="estado-1-noconfirmado">
+            <h1 class="headline">¡Tu llamada <span class="text-orange">todavía no está confirmada!</span></h1>
+            <p class="sub-headline">Solo necesitamos que confirmes tu asistencia para reservar definitivamente tu lugar.</p>
+
+            <div class="step-title">✅ PASO N°1: <span>Mirá el video de abajo (menos de 30 segundos)</span></div>
+            <div class="video-box">
+                <vturb-smartplayer id="vid-6947357f76990ab694f71c65" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer> 
+                <script type="text/javascript"> 
+                    var s=document.createElement("script"); 
+                    s.src="https://scripts.converteai.net/ccd6abe5-9eed-4f1f-aa58-4573d241489b/players/6947357f76990ab694f71c65/v4/player.js", 
+                    s.async=!0,document.head.appendChild(s); 
+                </script>
+            </div>
+
+            <div class="step-title">✅ PASO N°2: <span>Confirmá tu llamada</span></div>
+            <div class="instructions-box">
+                <p>Para reservar tu lugar, respondé <span class="highlight-bold">“CONFIRMO”</span> al mensaje que te enviamos por WhatsApp.</p>
+                <p><span class="highlight-bold">Importante:</span><br>Solo tomamos llamadas confirmadas.<br><span class="highlight-red">Si no respondés, tu cita será cancelada automáticamente.</span></p>
+                
+                <p>Esto lo hacemos porque estamos recibiendo muchas agendas falsas y queremos dedicar tiempo real solo a personas comprometidas.</p>
+
+                <p id="texto-cuenta-regresiva" style="display: none; font-size: 0.95rem; color: #8892b0; margin-top: 18px; line-height: 1.5;">
+                    Serás redirigido a WhatsApp automáticamente en <span id="tiempo-timer" style="color: #f25522; font-weight: 800; font-size: 1.1rem;">60</span> segundos para confirmar tu llamada...
+                </p>
+            </div>
+        </div>
+
+        <div id="estado-2-confirmado" style="display: none;">
+            <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+            <h1 class="headline">¡Un último paso <span class="text-orange">importante!</span></h1>
+            
+            <div class="lead-box">
+                <p>Si aún no has enviado el mensaje por WhatsApp, <span class="highlight-bold">es vital que lo hagas ahora</span> para no perder tu reserva.</p>
+                <p>Si ya confirmaste tu llamada, <span class="text-orange" style="font-weight: 800;">¡Excelente!</span> Mantente atento a nuestro chat.</p>
+                <p>En las próximas horas te estaremos enviando <span class="highlight-bold">material exclusivo y casos de estudio</span> para que llegues a nuestra sesión con total claridad sobre cómo operan nuestros negocios digitales.</p>
+            </div>
+
+            <a href="https://www.instagram.com/creamosnegociosrentables" target="_blank" class="btn-instagram">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                SÍGUENOS EN INSTAGRAM
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | <a href="#">Políticas de Privacidad</a> | <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let waClicked = false;
+            let trapArmed = false;
+
+            const estado1 = document.getElementById('estado-1-noconfirmado');
+            const estado2 = document.getElementById('estado-2-confirmado');
+            const btnWa = document.getElementById('btn-wa-confirmar');
+            
+            // 🚨 IMPORTANTE: Reemplaza TU_NUMERO_AQUI por el de tu equipo (solo números, con el código de país, ej: 51999888777)
+            const urlWhatsAppDestino = "https://api.whatsapp.com/send?phone=TU_NUMERO_AQUI&text=Hola,%20CONFIRMO%20mi%20llamada%20para%20adquirir%20mi%20negocio%20digital.";
+
+            // Variables para la auto-redirección
+            let videoFinalizado = false;
+            let tiempoRestante = 60; // 👈 Puedes cambiar a 30 si prefieres que sea más rápido
+            let timerRedireccion;
+            const textoTimer = document.getElementById('texto-cuenta-regresiva');
+            const spanTiempo = document.getElementById('tiempo-timer');
+
+            // 1. REVISAR HUELLA DIGITAL AL CARGAR LA PÁGINA
+            if (localStorage.getItem('cn_confirmado') === 'true') {
+                estado1.style.display = 'none';
+                estado2.style.display = 'block';
+                waClicked = true;
+            }
+
+            // 2. MONITOREAR VTURB PARA INICIAR CUENTA REGRESIVA
+            const checkVturbTerminado = setInterval(() => {
+                if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances.length > 0) {
+                    const player = window.smartplayer.instances[0];
+                    // Si el video tiene duración y el usuario llega al final (faltando 1 segundo o menos)
+                    if (player.video && player.video.duration > 0) {
+                        if (player.video.currentTime >= (player.video.duration - 1) && !videoFinalizado) {
+                            videoFinalizado = true;
+                            clearInterval(checkVturbTerminado);
+                            iniciarAutoRedireccion();
+                        }
+                    }
+                }
+            }, 1000);
+
+            function iniciarAutoRedireccion() {
+                textoTimer.style.display = 'block'; 
+                
+                timerRedireccion = setInterval(() => {
+                    tiempoRestante--;
+                    spanTiempo.innerText = tiempoRestante;
+
+                    if (tiempoRestante <= 0) {
+                        clearInterval(timerRedireccion);
+                        
+                        // Guardamos el sello en el navegador como si hubiera hecho clic
+                        waClicked = true;
+                        localStorage.setItem('cn_confirmado', 'true');
+                        
+                        // Ocultamos la vista actual y preparamos la de nutrición por si regresan
+                        estado1.style.display = 'none';
+                        estado2.style.display = 'block';
+                        
+                        // Disparamos la auto-redirección a WhatsApp
+                        window.location.href = urlWhatsAppDestino;
+                    }
+                }, 1000);
+            }
+
+            // 3. REGISTRAR EL CLIC EN WHATSAPP (Manual)
+            if(btnWa) {
+                btnWa.addEventListener('click', function() {
+                    waClicked = true;
+                    localStorage.setItem('cn_confirmado', 'true');
+                    
+                    // Si deciden hacer clic, cancelamos el temporizador para que no haya doble redirección
+                    if(timerRedireccion) clearInterval(timerRedireccion);
+                });
+            }
+
+            // 4. ALERTA NATIVA DE SALIDA (Si intentan cerrar sin confirmar)
+            window.addEventListener('beforeunload', function (e) {
+                if (!waClicked) {
+                    e.preventDefault(); 
+                    e.returnValue = ''; 
+                }
+            });
+
+            // 5. SECUESTRO DE HISTORIAL (Botón Atrás)
+            function armTrap() {
+                if (trapArmed || waClicked) return;
+                trapArmed = true;
+                
+                window.history.pushState('trap', null, window.location.href);
+                window.history.pushState('trap', null, window.location.href);
+                
+                window.addEventListener('popstate', function() {
+                    localStorage.setItem('cn_confirmado', 'true');
+                    estado1.style.display = 'none';
+                    estado2.style.display = 'block';
+                    waClicked = true; 
+                    if(timerRedireccion) clearInterval(timerRedireccion); // Frenamos timer si retroceden
+                });
+            }
+
+            document.addEventListener('click', armTrap);
+            document.addEventListener('touchstart', armTrap);
+            document.addEventListener('scroll', armTrap);
+        });
+    </script>
+</body>
+</html>
