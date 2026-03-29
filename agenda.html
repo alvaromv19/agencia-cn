@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendá tu llamada | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://links.creamosnegociosrentables.com" crossorigin>
+    <link rel="dns-prefetch" href="https://links.creamosnegociosrentables.com">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 1000px; 
+            padding: 30px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1; 
+        }
+
+        .content img.logo {
+            max-width: 140px;
+            height: auto;
+            margin-bottom: 25px; 
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 70%;
+            background: rgba(34, 116, 242, 0.20); 
+            filter: blur(100px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+        }
+
+        p.lead {
+            font-size: 1.1rem;
+            color: #8892b0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .text-orange { 
+            color: #f25522; 
+            background: linear-gradient(90deg, #f25522 0%, #ffad91 40%, #f25522 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText { to { background-position: 200% center; } }
+
+        /* --- CONTENEDOR DEL CALENDARIO --- */
+        .calendar-box {
+            position: relative; 
+            width: 100%;
+            background: #ffffff; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            margin: 0 auto;
+            min-height: 550px; 
+        }
+
+        /* --- ESTILOS DEL LOADER DE PRECARGA --- */
+        .loader-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            z-index: 0; 
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(242, 85, 34, 0.15);
+            border-top: 4px solid #f25522; 
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text { margin-top: 18px; color: #4a5568; font-size: 1rem; font-weight: 600; animation: pulseText 1.5s infinite; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Responsividad Móvil */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.6rem; margin-bottom: 15px; }
+            p.lead { font-size: 0.95rem; margin-bottom: 25px; }
+            .content { padding: 20px 15px 40px; } 
+            .content img.logo { max-width: 120px; margin-bottom: 20px; }
+            .calendar-box { border-radius: 8px; min-height: 500px; }
+        }
+
+        .footer { width: 100%; padding: 25px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.03); margin-top: auto; }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+        <img src="presentacion/assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <div id="header-normal">
+            <h1>Agendá tu llamada para adquirir un<br><span class="text-orange">negocio digital validado</span></h1>
+        </div>
+
+        <div id="header-rescate" style="display: none;">
+            <h1>¿Llegaste hasta aquí <span class="text-orange">solamente para regresar?</span></h1>
+            <p class="lead">Te tomaste el tiempo de ver el video y entender el modelo de negocio. No dejes que una duda te impida escalar. <strong>Agendá tu llamada abajo sin compromiso</strong> y lo charlamos.</p>
+        </div>
+        
+        <div class="calendar-box">
+            
+            <div class="loader-wrapper" id="calendar-loader">
+                <div class="spinner"></div>
+                <div class="loader-text">Cargando disponibilidad...</div>
+            </div>
+
+            <iframe 
+                src="https://links.creamosnegociosrentables.com/widget/booking/TZyEhDjxHnH0clscir98" 
+                style="width: 100%; border:none; overflow: hidden; position: relative; z-index: 1; opacity: 0; transition: opacity 0.5s ease-in-out;" 
+                scrolling="no" 
+                id="TZyEhDjxHnH0clscir98_1774670911013"
+                onload="document.getElementById('calendar-loader').style.display='none'; this.style.opacity='1';">
+            </iframe>
+            
+            <script src="https://links.creamosnegociosrentables.com/js/form_embed.js" type="text/javascript"></script>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | 
+            <a href="#">Políticas de Privacidad</a> | 
+            <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let trapArmed = false;
+
+            function armTrap() {
+                if (trapArmed) return;
+                trapArmed = true;
+                
+                // Inyectamos estado en el historial (no recarga la página, mantiene URLs)
+                window.history.pushState('trap', null, window.location.href);
+                window.history.pushState('trap', null, window.location.href);
+                
+                window.addEventListener('popstate', function() {
+                    // Si intentan darle Atrás, ocultamos el título normal y mostramos el "Golpe de Realidad"
+                    document.getElementById('header-normal').style.display = 'none';
+                    document.getElementById('header-rescate').style.display = 'block';
+                    
+                    // Hacemos scroll suave hacia arriba para asegurarnos de que lean el nuevo título
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Armamos la trampa con la primera interacción del usuario
+            document.addEventListener('click', armTrap);
+            document.addEventListener('touchstart', armTrap);
+            document.addEventListener('scroll', armTrap);
+        });
+    </script>
+
+</body>
+</html>
