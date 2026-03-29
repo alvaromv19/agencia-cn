@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siguiente Paso | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 800px;
+            padding: 50px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            background: rgba(34, 116, 242, 0.25); 
+            filter: blur(100px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .logo {
+            max-width: 140px;
+            height: auto;
+            margin-bottom: 30px; 
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+        }
+
+        .text-orange { color: #f25522; }
+
+        .lead-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .lead-box p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .lead-box p:last-child { margin-bottom: 0; }
+
+        .highlight {
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        /* --- BOTÓN DE INSTAGRAM --- */
+        .btn-instagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 18px 25px;
+            /* Gradiente característico de Instagram adaptado al tema oscuro */
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(220, 39, 67, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-instagram:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(220, 39, 67, 0.6);
+            /* Invertimos sutilmente el gradiente al hacer hover */
+            background: linear-gradient(45deg, #bc1888 0%, #cc2366 25%, #dc2743 50%, #e6683c 75%, #f09433 100%);
+        }
+
+        .btn-instagram svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .content { padding: 30px 15px 40px; } 
+            .lead-box { padding: 25px 15px; }
+            .lead-box p { font-size: 1rem; }
+            .btn-instagram { font-size: 1rem; padding: 15px 20px; }
+        }
+
+        .footer {
+            width: 100%;
+            padding: 25px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: auto; 
+        }
+        
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+        
+        <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <h1>¡Un último paso <span class="text-orange">importante!</span></h1>
+        
+        <div class="lead-box">
+            <p>Si aún no has enviado el mensaje por WhatsApp, <span class="highlight">es vital que lo hagas ahora</span> para no perder tu reserva.</p>
+            
+            <p>Si ya confirmaste tu llamada, <span class="text-orange" style="font-weight: 800;">¡Excelente!</span> Mantente atento a nuestro chat.</p>
+            
+            <p>En las próximas horas te estaremos enviando <span class="highlight">material exclusivo y casos de estudio</span> para que llegues a nuestra sesión con total claridad sobre cómo operan nuestros negocios digitales.</p>
+        </div>
+
+        <a href="https://www.instagram.com/creamosnegociosrentables" target="_blank" class="btn-instagram">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+            </svg>
+            SÍGUENOS EN INSTAGRAM
+        </a>
+
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | 
+            <a href="#">Políticas de Privacidad</a> | 
+            <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+</body>
+</html>
