@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etapa 4: Activación de campaña | Creamos Negocios</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+    <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
+    <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
+    <link rel="dns-prefetch" href="https://cdn.converteai.net">
+    <link rel="dns-prefetch" href="https://scripts.converteai.net">
+    <link rel="dns-prefetch" href="https://images.converteai.net">
+    <link rel="dns-prefetch" href="https://api.vturb.com.br">
+    
+    <style>
+        /* --- DESIGN TOKENS --- */
+        :root {
+            --bg-body: #030712;       
+            --bg-glass: rgba(17, 24, 39, 0.7); 
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;        
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --accent-cyan: #06b6d4;   
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-up {
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+
+        /* --- HEADER --- */
+        header {
+            width: 100%;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(3, 7, 18, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 50%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        main {
+            width: 100%;
+            max-width: 1000px;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .page-badge {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            background: rgba(6, 182, 212, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* --- CONTENEDOR DE VIDEO --- */
+        .video-wrapper {
+            width: 100%;
+            max-width: 850px;
+            background: #000;
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 0; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.15);
+            position: relative;
+            z-index: 5;
+            overflow: hidden;
+            aspect-ratio: 16 / 9; 
+            margin-bottom: 40px;
+        }
+
+        .video-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background: var(--primary-glow);
+            filter: blur(80px);
+            z-index: 0;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* --- BOTÓN DE ACCIÓN --- */
+        .btn-action {
+            padding: 16px 36px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            z-index: 5;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.6);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="animate-up">
+        <div class="brand-text">
+            <i class="fa-solid fa-bolt"></i> Creamos Negocios
+        </div>
+    </header>
+
+    <main>
+        <div class="video-glow"></div>
+        <span class="page-badge animate-up delay-1">Etapa 4 de 5</span>
+        <h1 class="page-title animate-up delay-1">Activación de campaña</h1>
+        <p class="page-subtitle animate-up delay-2">
+            Ponemos el negocio en marcha. Es momento de encender los anuncios y buscar resultados.
+        </p>
+
+        <div class="video-wrapper">
+            <vturb-smartplayer id="vid-69c1f677d54d8d20f10d37f3" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer> <script type="text/javascript"> var s=document.createElement("script"); s.src="https://scripts.converteai.net/ccd6abe5-9eed-4f1f-aa58-4573d241489b/players/69c1f677d54d8d20f10d37f3/v4/player.js", s.async=!0,document.head.appendChild(s); </script>
+            </div>
+    </main>
+
+</body>
+</html>
