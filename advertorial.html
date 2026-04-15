@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siguiente Paso | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            background: rgba(34, 116, 242, 0.25); 
+            filter: blur(100px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .logo { max-width: 140px; height: auto; margin-bottom: 30px; }
+
+        /* --- TIPOGRAFÍA Y COPY --- */
+        .headline { 
+            font-size: 2.4rem; 
+            font-weight: 800; 
+            line-height: 1.2; 
+            letter-spacing: -0.5px; 
+            margin-bottom: 20px; 
+        }
+
+        .text-orange { 
+            color: #f25522; 
+            background: linear-gradient(90deg, #f25522 0%, #ffad91 40%, #f25522 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
+        }
+
+        .text-italic-underline { 
+            font-style: italic; 
+            font-weight: 600; 
+            position: relative;
+            display: inline-block;
+        }
+
+        .text-italic-underline::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            bottom: 2px;
+            left: 0;
+            background-color: #f25522;
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+            animation: drawLine 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
+            box-shadow: 0px 2px 8px rgba(242, 85, 34, 0.6);
+        }
+
+        @keyframes drawLine {
+            to { transform: scaleX(1); transform-origin: bottom left; }
+        }
+
+        .copy-body {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .highlight-bold { font-weight: 800; color: #ffffff; }
+
+        /* --- CAJAS DE ÉNFASIS (Pilares y Garantía) --- */
+        .lead-box { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 12px; 
+            padding: 35px; 
+            margin-bottom: 35px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            text-align: left;
+        }
+
+        .lead-box h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .lead-box ul {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .lead-box li {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .lead-box li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1rem;
+        }
+
+        /* --- BOTÓN AGENDA --- */
+        .btn-agenda { 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 12px; 
+            width: 100%; 
+            max-width: 450px; 
+            margin: 20px auto 10px auto; 
+            padding: 20px 25px; 
+            background: linear-gradient(135deg, #f25522 0%, #e63e00 100%); 
+            color: #ffffff; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(242, 85, 34, 0.4); 
+            transition: all 0.3s ease; 
+            border: 1px solid #ff7247; 
+        }
+
+        .btn-agenda:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 15px 30px -5px rgba(242, 85, 34, 0.6); 
+            background: linear-gradient(135deg, #ff7247 0%, #f25522 100%); 
+        }
+
+        .redirect-notice {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 15px;
+        }
+
+        /* Responsividad Móvil */
+        @media (max-width: 768px) {
+            .headline { font-size: 1.9rem; }
+            .content { padding: 30px 15px 40px; } 
+            .lead-box { padding: 25px 15px; }
+            .copy-body { font-size: 1.05rem; }
+            .btn-agenda { font-size: 1.05rem; padding: 18px 20px; }
+        }
+
+        .footer { width: 100%; padding: 25px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.03); margin-top: auto; }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+
+        <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <h1 class="headline">Sabemos que nos venís siguiendo la pista. <br><span class="text-orange">Terminemos con la fricción.</span></h1>
+        
+        <p class="copy-body">Si llegaste hasta acá, es porque ya viste nuestros anuncios y entendés que el modelo tradicional de comprar cursos e intentar descifrar el algoritmo por tu cuenta está <span class="highlight-bold">roto.</span></p>
+
+        <p class="copy-body">No es tu culpa. La mayoría de los emprendedores se queman intentando ser copywriters, media buyers y diseñadores al mismo tiempo. Pasan meses armando un funnel para que al final no convierta.</p>
+
+        <p class="copy-body text-italic-underline">Nosotros eliminamos esa curva de aprendizaje.</p>
+
+        <div class="lead-box" style="margin-top: 40px;">
+            <h3>Lo que te entregamos (100% Done-For-You):</h3>
+            <ul>
+                <li><span class="highlight-bold">Tu negocio digital armado:</span> Landing page de alta conversión, VSL estructurado y pasarela de pagos conectada.</li>
+                <li><span class="highlight-bold">Sistema de Tráfico:</span> Campañas de Meta Ads configuradas y listas para escalar.</li>
+                <li><span class="highlight-bold">Garantía por Contrato:</span> No te soltamos la mano. Nuestro equipo te acompaña 1 a 1 hasta que recuperes el 100% de tu inversión inicial.</li>
+            </ul>
+            <p class="copy-body" style="margin-bottom: 0; font-size: 1rem;">No vendemos información. Construimos activos digitales validados que generan ventas desde la primera semana.</p>
+        </div>
+
+        <h1 class="headline" style="font-size: 1.8rem;">El siguiente paso es simple.</h1>
+        <p class="copy-body" style="text-align: center;">Haz clic en el botón de abajo para ver nuestra disponibilidad y agendar una sesión estratégica. Analizaremos tu situación actual y veremos si calificás para que construyamos tu ecosistema.</p>
+
+        <a href="https://creamosnegociosrentables.com/agenda" id="btn-agenda" class="btn-agenda">
+            SÍ, QUIERO AGENDAR MI LLAMADA
+        </a>
+
+        <p class="redirect-notice">Serás redirigido automáticamente en breve...</p>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | <a href="#">Políticas de Privacidad</a> | <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. GESTIÓN DE PARÁMETROS URL
+            const urlBaseAgenda = "https://creamosnegociosrentables.com/agenda";
+            const parametrosActuales = window.location.search; // Captura todo después del "?" (ej: ?utm_source=fb...)
+            const urlFinal = urlBaseAgenda + parametrosActuales;
+
+            // Inyectar URL con parámetros al botón
+            const btnAgenda = document.getElementById("btn-agenda");
+            if (btnAgenda) {
+                btnAgenda.href = urlFinal;
+            }
+
+            // 2. REDIRECCIÓN AUTOMÁTICA (2.5 minutos = 150,000 milisegundos)
+            const tiempoRedireccion = 150000; 
+
+            setTimeout(function() {
+                window.location.href = urlFinal;
+            }, tiempoRedireccion);
+        });
+    </script>
+</body>
+</html>
