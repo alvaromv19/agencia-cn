@@ -108,8 +108,11 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(242, 85, 34, 0.15);
-            margin-bottom: 15px;
-            background-color: #0a0d14; /* Fondo oscuro por si la imagen tarda en cargar */
+            background-color: #0a0d14; 
+    
+            /* ESTAS SON LAS LÍNEAS NUEVAS / MODIFICADAS */
+            max-width: 600px; /* Controla qué tan grande se verá. Puedes bajarlo a 500px si la sigues viendo grande */
+            margin: 0 auto 15px auto; /* Esto asegura que la imagen se mantenga perfectamente centrada */
         }
 
         .proof-img-wrapper img {
