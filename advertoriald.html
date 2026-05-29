@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siguiente Paso | Creamos Negocios</title>
+
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1189592235920816');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1189592235920816&ev=PageView&noscript=1"
+    /></noscript>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden; /* CRÍTICO: Evita scroll horizontal por la cinta diagonal */
+        }
+
+        /* --- CINTA DIAGONAL DE DESCUENTO --- */
+        .ribbon-wrapper {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            z-index: 100;
+            pointer-events: none; /* Permite hacer clic a través de ella */
+        }
+
+        .ribbon {
+            position: absolute;
+            top: 25px;
+            right: -45px;
+            width: 220px;
+            background: linear-gradient(135deg, #f25522 0%, #e63e00 100%);
+            color: #fff;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 8px 0;
+            text-transform: uppercase;
+            transform: rotate(45deg);
+            box-shadow: 0 5px 15px rgba(242, 85, 34, 0.4);
+            letter-spacing: 1px;
+            /* Animación de entrada elástica */
+            animation: dropRibbon 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            opacity: 0;
+        }
+
+        @keyframes dropRibbon {
+            0% { transform: translateY(-100px) rotate(45deg); opacity: 0; }
+            100% { transform: translateY(0) rotate(45deg); opacity: 1; }
+        }
+
+        .content {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            background: rgba(34, 116, 242, 0.20); 
+            filter: blur(100px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .logo { max-width: 140px; height: auto; margin-bottom: 30px; }
+
+        /* --- TIPOGRAFÍA Y COPY --- */
+        .headline { 
+            font-size: 2.4rem; 
+            font-weight: 800; 
+            line-height: 1.2; 
+            letter-spacing: -0.5px; 
+            margin-bottom: 20px; 
+        }
+
+        .text-orange { 
+            color: #f25522; 
+            background: linear-gradient(90deg, #f25522 0%, #ffad91 40%, #f25522 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
+        }
+
+        .copy-body {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .highlight-bold { font-weight: 800; color: #ffffff; }
+
+        /* --- IMAGEN DE PRUEBA SOCIAL --- */
+        .proof-container {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .proof-img-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(242, 85, 34, 0.15);
+            margin-bottom: 15px;
+            background-color: #0a0d14; 
+        }
+
+        .proof-img-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .proof-subtext {
+            color: #f25522;
+            font-size: 1rem;
+            font-style: italic;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(242, 85, 34, 0.3);
+        }
+
+        /* --- CAJAS DE ÉNFASIS (Objeciones) --- */
+        .lead-box { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 12px; 
+            padding: 35px; 
+            margin-bottom: 40px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            text-align: left;
+        }
+
+        .lead-box h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .lead-box ul {
+            list-style: none;
+            margin-bottom: 10px;
+        }
+
+        .lead-box li {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .lead-box li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1.1rem;
+        }
+
+        .objection-title {
+            color: #ffffff;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.15rem;
+        }
+
+        /* --- CONTADOR REGRESIVO (NUEVO) --- */
+        .timer-title {
+            text-align: center;
+            color: #f25522;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            width: 75px;
+            padding: 12px 5px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .countdown-time {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* --- BOTÓN AGENDA --- */
+        .btn-agenda { 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 12px; 
+            width: 100%; 
+            max-width: 480px; 
+            margin: 0 auto 10px auto; 
+            padding: 20px 25px; 
+            background: linear-gradient(135deg, #f25522 0%, #e63e00 100%); 
+            color: #ffffff; 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(242, 85, 34, 0.4); 
+            transition: all 0.3s ease; 
+            border: 1px solid #ff7247; 
+        }
+
+        .btn-agenda:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 15px 30px -5px rgba(242, 85, 34, 0.6); 
+            background: linear-gradient(135deg, #ff7247 0%, #f25522 100%); 
+        }
+
+        .redirect-notice {
+            font-size: 0.9rem;
+            color: #8892b0;
+            margin-top: 15px;
+            font-weight: 400;
+        }
+
+        /* Responsividad Móvil */
+        @media (max-width: 768px) {
+            .headline { font-size: 1.9rem; }
+            .content { padding: 30px 15px 40px; } 
+            .lead-box { padding: 25px 15px; }
+            .copy-body { font-size: 1.05rem; }
+            .btn-agenda { font-size: 1.05rem; padding: 18px 20px; }
+            .lead-box h3 { font-size: 1.25rem; }
+            .ribbon-wrapper { width: 120px; height: 120px; }
+            .ribbon { width: 180px; font-size: 0.75rem; top: 20px; right: -45px; }
+            
+            /* Ajuste del contador para pantallas muy pequeñas */
+            .countdown-container { gap: 10px; }
+            .countdown-box { width: 65px; padding: 10px 5px; }
+            .countdown-time { font-size: 1.5rem; }
+        }
+
+        .footer { width: 100%; padding: 25px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.03); margin-top: auto; }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <!-- CINTA DE DESCUENTO (Ribbon) -->
+    <div class="ribbon-wrapper">
+        <div class="ribbon">Descuento Activo</div>
+    </div>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+
+        <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <h1 class="headline">Sabemos que nos venís siguiendo la pista. <br><span class="text-orange">Terminemos con la fricción.</span></h1>
+        
+        <p class="copy-body">Algo pasó. Un imprevisto en tu agenda, una duda final sobre la operativa, o simplemente el día a día cruzándose en el medio. Lo entendemos.</p>
+
+        <p class="copy-body">Pero si llegaste hasta acá, ya sabés que el modelo de intentar descifrar todo por tu cuenta sigue <span class="highlight-bold">roto.</span></p>
+
+        <div class="proof-container">
+            <div class="proof-img-wrapper">
+                <img src="assets/dashboard.jpg" alt="Resultados del Ecosistema">
+            </div>
+            <p class="proof-subtext">Esto no es teoría. Es el panel de uno de los ecosistemas que entregamos recientemente.</p>
+        </div>
+
+        <div class="lead-box">
+            <h3>Las 3 dudas que frenan a todos antes de dar el paso:</h3>
+            <ul>
+                <li>
+                    <span class="objection-title">¿Y los costos ocultos?</span> 
+                    $3,000 incluye TODO. Producto validado, landing, campañas armadas, integración y acompañamiento hasta recuperar tu inversión. Lo firmamos por contrato. Cero sorpresas.
+                </li>
+                <li>
+                    <span class="objection-title">¿Cómo sé que realmente vende?</span> 
+                    En tu llamada de diagnóstico te abrimos el dashboard real. No verás proyecciones, verás facturación verificable, ROAS real y ventas de los últimos 30 días.
+                </li>
+                <li>
+                    <span class="objection-title">¿Y si no soporto la operación?</span> 
+                    Nuestro equipo opera tu negocio durante los primeros 60 días. Vos aprendés y tomás el control mientras el ecosistema ya está facturando.
+                </li>
+            </ul>
+        </div>
+
+        <h1 class="headline" style="font-size: 1.8rem; margin-bottom: 15px;">Tu lugar sigue reservado.</h1>
+        
+        <p class="copy-body" style="text-align: center; margin-bottom: 30px;">
+            30 minutos. Sin discurso de venta. Te mostramos los negocios disponibles esta semana, resolvemos estas dudas cara a cara y vos decidís si el modelo encaja con tu perfil.
+        </p>
+
+        <!-- CONTADOR REGRESIVO -->
+        <p class="timer-title">El descuento de remarketing expira en:</p>
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <div class="countdown-time" id="days">00</div>
+                <div class="countdown-label">Días</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-time" id="hours">00</div>
+                <div class="countdown-label">Horas</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-time" id="minutes">00</div>
+                <div class="countdown-label">Minutos</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-time" id="seconds">00</div>
+                <div class="countdown-label">Segundos</div>
+            </div>
+        </div>
+
+        <a href="https://creamosnegociosrentables.com/agenda" id="btn-agenda" class="btn-agenda">
+            VER HORARIOS DISPONIBLES
+        </a>
+
+        <p class="redirect-notice">Directo a la agenda · Sin volver a llenar formularios largos.</p>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | <a href="#">Políticas de Privacidad</a> | <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. GESTIÓN DE PARÁMETROS URL
+            const urlBaseAgenda = "https://creamosnegociosrentables.com/agenda";
+            const parametrosActuales = window.location.search; 
+            const urlFinal = urlBaseAgenda + parametrosActuales;
+
+            // Inyectar URL con parámetros al botón
+            const btnAgenda = document.getElementById("btn-agenda");
+            if (btnAgenda) {
+                btnAgenda.href = urlFinal;
+            }
+
+            // 2. REDIRECCIÓN AUTOMÁTICA
+            const tiempoRedireccion = 150000; 
+            setTimeout(function() {
+                window.location.href = urlFinal;
+            }, tiempoRedireccion);
+
+            // 3. LÓGICA DEL CONTADOR REGRESIVO (31 de Mayo de 2026 23:59:59)
+            const countdownDate = new Date("May 31, 2026 23:59:59").getTime();
+
+            const timer = setInterval(function() {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+
+                // Si la fecha ya pasó, dejar en cero
+                if (distance < 0) {
+                    clearInterval(timer);
+                    document.getElementById("days").innerHTML = "00";
+                    document.getElementById("hours").innerHTML = "00";
+                    document.getElementById("minutes").innerHTML = "00";
+                    document.getElementById("seconds").innerHTML = "00";
+                    return;
+                }
+
+                // Cálculos matemáticos para días, horas, minutos y segundos
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Imprimir con padStart para asegurar 2 dígitos (ej: 09 en vez de 9)
+                document.getElementById("days").innerHTML = String(days).padStart(2, '0');
+                document.getElementById("hours").innerHTML = String(hours).padStart(2, '0');
+                document.getElementById("minutes").innerHTML = String(minutes).padStart(2, '0');
+                document.getElementById("seconds").innerHTML = String(seconds).padStart(2, '0');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
