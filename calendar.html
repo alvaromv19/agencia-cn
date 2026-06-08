@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agendá tu llamada | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://links.creamosnegociosrentables.com" crossorigin>
+    <link rel="dns-prefetch" href="https://links.creamosnegociosrentables.com">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308; 
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 950px; 
+            padding: 40px 24px 60px; 
+            text-align: center;
+            position: relative; 
+            z-index: 1;
+            flex: 1; 
+        }
+
+        .logo {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 30px; 
+        }
+
+        /* Resplandor Azul Atmosférico */
+        .bg-glow {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            height: 75%;
+            background: rgba(34, 116, 242, 0.15); 
+            filter: blur(120px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Bloques de Encabezado */
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 35px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .text-orange { 
+            color: #f25522; 
+            background: linear-gradient(90deg, #f25522 0%, #ffad91 40%, #f25522 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText { to { background-position: 200% center; } }
+
+        /* Estilos específicos para el encabezado de rescate (Copia el copy exacto) */
+        #header-rescate h1 {
+            font-size: 2.2rem;
+            line-height: 1.3;
+        }
+
+        .lead-rescue {
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        /* --- CONTENEDOR OPTIMIZADO DEL CALENDARIO --- */
+        .calendar-box {
+            position: relative; 
+            width: 100%;
+            background: #ffffff; 
+            border-radius: 14px; 
+            overflow: hidden; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            margin: 0 auto;
+            min-height: 600px; 
+            animation: scaleIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        iframe {
+            width: 100%;
+            min-height: 600px;
+            border: none;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        /* --- LOADER DE PRECARGA ULTRA-MINIMALISTA --- */
+        .loader-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            z-index: 1; 
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(242, 85, 34, 0.1);
+            border-top: 4px solid #f25522; 
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loader-text { 
+            margin-top: 20px; 
+            color: #4a5568; 
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            animation: pulseText 1.5s infinite; 
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* Ajustes de Responsividad en Pantallas Móviles */
+        @media (max-width: 768px) {
+            h1, #header-rescate h1 { font-size: 1.6rem; margin-bottom: 20px; }
+            .lead-rescue { font-size: 0.95rem; padding: 0 5px; }
+            .content { padding: 30px 16px 40px; } 
+            .logo { max-width: 110px; margin-bottom: 20px; }
+            .calendar-box { border-radius: 10px; min-height: 680px; }
+            iframe { min-height: 680px; }
+        }
+
+        .footer { width: 100%; padding: 30px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.02); margin-top: auto; }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="bg-glow"></div>
+        <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <div id="header-normal">
+            <h1>Agendá tu llamada para adquirir un<br><span class="text-orange">negocio digital validado</span></h1>
+        </div>
+
+        <div id="header-rescate" style="display: none;">
+            <h1>¿En serio vas a abandonar en el <span class="text-orange">último paso?</span></h1>
+            <p class="lead-rescue">Llegaste hasta aquí porque sabes que necesitas un cambio. Ya viste el video y entendiste que entregamos negocios validados. Salir de esta página ahora mismo es ceder ante el mismo patrón de excusas que te impide escalar.<br><br><strong>Rompe el patrón y agendá tu llamada abajo.</strong> Si realmente no estás comprometido con tus resultados, cierra la pestaña y libérale el lugar a alguien que sí lo esté.</p>
+        </div>
+        
+        <div class="calendar-box">
+            
+            <div class="loader-wrapper" id="calendar-loader">
+                <div class="spinner"></div>
+                <div class="loader-text">Cargando disponibilidad directa...</div>
+            </div>
+
+            <iframe 
+                src="" 
+                scrolling="no" 
+                id="ghl-calendar-frame"
+                onload="handleIframeLoad()">
+            </iframe>
+            
+            <script src="https://links.creamosnegociosrentables.com/js/form_embed.js" type="text/javascript"></script>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | 
+            <a href="#">Políticas de Privacidad</a> | 
+            <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        // 1. Inyección de Parámetros Dinámicos al Iframe antes de la carga
+        document.addEventListener("DOMContentLoaded", function() {
+            const baseCalendarUrl = "https://links.creamosnegociosrentables.com/widget/booking/TZyEhDjxHnH0clscir98";
+            const currentUrlParams = window.location.search;
+            const iframe = document.getElementById('ghl-calendar-frame');
+            
+            // Adjuntamos las UTMs, Nombre, Email y Teléfono directamente al iframe de GHL
+            if (currentUrlParams) {
+                iframe.src = baseCalendarUrl + currentUrlParams;
+            } else {
+                iframe.src = baseCalendarUrl;
+            }
+        });
+
+        // Ocultar loader cuando el contenido del calendario esté renderizado
+        function handleIframeLoad() {
+            const iframe = document.getElementById('ghl-calendar-frame');
+            // Verificamos que el src no esté vacío antes de mostrarlo
+            if (iframe.src && iframe.src !== window.location.href) {
+                document.getElementById('calendar-loader').style.display = 'none';
+                iframe.style.opacity = '1';
+            }
+        }
+
+        // 2. Sistema Avanzado de Rescate (Filtro Anti-Abandono del Botón Atrás)
+        document.addEventListener("DOMContentLoaded", function() {
+            let trapArmed = false;
+
+            function armTrap() {
+                if (trapArmed) return;
+                trapArmed = true;
+                
+                // Generamos estados artificiales en el historial del navegador
+                window.history.pushState('rescue-state', null, window.location.href);
+                window.history.pushState('rescue-state', null, window.location.href);
+                
+                window.addEventListener('popstate', function() {
+                    // Interceptamos la salida y activamos el cambio de interfaz de impacto
+                    document.getElementById('header-normal').style.display = 'none';
+                    document.getElementById('header-rescate').style.display = 'block';
+                    
+                    // Ajuste de scroll suave automático al tope para móviles
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // El disparador se activa de inmediato ante cualquier interacción física mínima en la pantalla
+            document.addEventListener('click', armTrap, { once: true });
+            document.addEventListener('touchstart', armTrap, { once: true });
+            document.addEventListener('scroll', armTrap, { once: true });
+        });
+    </script>
+
+</body>
+</html>
