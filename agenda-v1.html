@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Perfil | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Resplandor Azul Profundo de Fondo */
+        .bg-glow {
+            position: fixed;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90vw;
+            height: 60vh;
+            background: rgba(34, 116, 242, 0.18); 
+            filter: blur(120px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 680px;
+            text-align: center;
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .logo {
+            max-width: 140px;
+            height: auto;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .text-orange { 
+            color: #f25522; 
+            background: linear-gradient(90deg, #f25522 0%, #ffad91 40%, #f25522 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shineText 4s linear infinite;
+        }
+
+        @keyframes shineText { to { background-position: 200% center; } }
+
+        .subtitle {
+            color: #8892b0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Contenedor del Formulario */
+        .form-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 45px 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 20px;
+        }
+
+        label.field-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+            line-height: 1.4;
+        }
+
+        /* Inputs Premium */
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 16px 18px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #f25522;
+            box-shadow: 0 0 0 4px rgba(242, 85, 34, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Estructura Interactiva Tipo Tarjeta para Opciones Seleccionables */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .custom-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .custom-option:hover {
+            border-color: rgba(242, 85, 34, 0.4);
+            background: rgba(242, 85, 34, 0.03);
+            transform: translateY(-1px);
+        }
+
+        .custom-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Indicador visual custom (Círculo de opción) */
+        .option-indicator {
+            height: 20px;
+            width: 20px;
+            border: 2px solid #4a5568;
+            border-radius: 50%;
+            margin-right: 16px;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .option-text {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+            transition: color 0.25s ease;
+        }
+
+        /* Comportamiento al activar o seleccionar */
+        .custom-option input[type="radio"]:checked ~ .option-indicator {
+            border-color: #f25522;
+            background: transparent;
+        }
+
+        .custom-option input[type="radio"]:checked ~ .option-indicator::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f25522;
+        }
+
+        .custom-option input[type="radio"]:checked ~ .option-text {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .custom-option:has(input[type="radio"]:checked) {
+            border-color: #f25522;
+            background: rgba(242, 85, 34, 0.06);
+            box-shadow: 0 4px 20px rgba(242, 85, 34, 0.05);
+        }
+
+        /* Botón de Envío Premium */
+        button.submit-button {
+            width: 100%;
+            background: #f25522;
+            color: #fff;
+            border: none;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button.submit-button:hover {
+            background: #ff6a3b;
+            box-shadow: 0 12px 30px rgba(242, 85, 34, 0.35);
+            transform: translateY(-2px);
+        }
+
+        button.submit-button:disabled {
+            background: #2d3748;
+            color: #718096;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .form-card { padding: 30px 20px; }
+            h1 { font-size: 1.75rem; }
+            .subtitle { font-size: 0.95rem; }
+        }
+
+        .footer {
+            width: 100%;
+            padding: 35px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: 60px;
+        }
+        .footer p { font-size: 0.75rem; color: #4a5568; margin: 5px 0; font-weight: 300; }
+        .footer a { color: #4a5568; text-decoration: none; transition: color 0.3s ease; }
+        .footer a:hover { color: #8892b0; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="content-wrapper">
+        <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        
+        <h1>Llamada de <span class="text-orange">Evaluación Estratégica</span></h1>
+        <p class="subtitle">Completa el formulario de aplicación para validar tu perfil y desbloquear el acceso a la agenda de disponibilidad directa.</p>
+
+        <div class="form-card">
+            <form id="funnelForm">
+                
+                <div class="form-group">
+                    <label class="field-label">Nombre completo *</label>
+                    <input type="text" id="nombre" required placeholder="Escribe tu nombre">
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Correo electrónico *</label>
+                    <input type="email" id="email" required placeholder="tu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">WhatsApp (Con código de país) *</label>
+                    <input type="tel" id="whatsapp" required placeholder="Ej: +34 600 000 000">
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">¿Cuál es tu objetivo al adquirir un negocio digital ya validado? *</label>
+                    <input type="text" id="objetivo" required placeholder="Ej: diversificar ingresos, flujo de caja estable...">
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">¿Entendés que este modelo consiste en adquirir negocios ya validados, y no en elegir ideas o nichos a gusto personal? *</label>
+                    <div class="options-container">
+                        <label class="custom-option">
+                            <input type="radio" name="q_modelo" value="Si, busco resultados, no elegir nicho" required>
+                            <span class="option-indicator"></span>
+                            <span class="option-text">Sí, busco resultados, no elegir nicho.</span>
+                        </label>
+                        <label class="custom-option">
+                            <input type="radio" name="q_modelo" value="No, quiero elegir la idea">
+                            <span class="option-indicator"></span>
+                            <span class="option-text">No, quiero elegir la idea.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">¿Contás actualmente con $3.000 USD para adquirir un negocio digital validado con acompañamiento garantizado por contrato hasta recuperar tu inversión? *</label>
+                    <div class="options-container">
+                        <label class="custom-option">
+                            <input type="radio" name="q_capital" value="Si, cuento actualmente con $3.000 USD" required>
+                            <span class="option-indicator"></span>
+                            <span class="option-text">Sí, cuento actualmente con el capital para invertir.</span>
+                        </label>
+                        <label class="custom-option">
+                            <input type="radio" name="q_capital" value="No, no cuento con el capital">
+                            <span class="option-indicator"></span>
+                            <span class="option-text">No dispongo de ese capital actualmente.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">¿Sos la persona que toma la decisión final sobre esta inversión? *</label>
+                    <div class="options-container">
+                        <label class="custom-option">
+                            <input type="radio" name="q_decision" value="Si, soy el unico tomador de decision" required>
+                            <span class="option-indicator"></span>
+                            <span class="option-text">Sí, soy el único tomador de decisión.</span>
+                        </label>
+                        <label class="custom-option">
+                            <input type="radio" name="q_decision" value="No, necesito validarlo con un socio / pareja">
+                            <span class="option-indicator"></span>
+                            <span class="option-text">No, necesito validarlo con un socio o pareja.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Trabajamos con cupos limitados de negocios digitales ya validados. Si todo encaja por ambos lados, ¿estarías dispuesto/a a avanzar con la compra? *</label>
+                    <div class="options-container">
+                        <label class="custom-option">
+                            <input type="radio" name="q_avanzar" value="Si" required>
+                            <span class="option-indicator"></span>
+                            <span class="option-text">Sí, estoy listo.</span>
+                        </label>
+                        <label class="custom-option">
+                            <input type="radio" name="q_avanzar" value="No">
+                            <span class="option-indicator"></span>
+                            <span class="option-text">No en este momento.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Te enviaremos un mensaje por WhatsApp para confirmar tu llamada. Si no respondes, tu cita será cancelada. ¿Entiendes el compromiso? *</label>
+                    <div class="options-container">
+                        <label class="custom-option">
+                            <input type="radio" name="q_confirmacion" value="Si, entiendo y confirmare" required>
+                            <span class="option-indicator"></span>
+                            <span class="option-text">Sí, entiendo. Confirmaré la llamada de inmediato.</span>
+                        </label>
+                        <label class="custom-option">
+                            <input type="radio" name="q_confirmacion" value="No podre responder">
+                            <span class="option-indicator"></span>
+                            <span class="option-text">No podré responder.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button" id="submitBtn">Validar Perfil y Continuar</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Creamos Negocios. Todos los derechos reservados.</p>
+        <p>
+            <a href="#">Términos y Condiciones</a> | 
+            <a href="#">Políticas de Privacidad</a> | 
+            <a href="#">Aviso Legal</a>
+        </p>
+    </footer>
+
+    <script>
+        document.getElementById('funnelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerText = 'Verificando datos...';
+            submitBtn.disabled = true;
+
+            // 1. Extraer dinámicamente todos los parámetros de rastreo de la URL actual
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            
+            const trackingData = {
+                utm_source: urlSearchParams.get('utm_source') || '',
+                utm_medium: urlSearchParams.get('utm_medium') || '',
+                utm_campaign: urlSearchParams.get('utm_campaign') || '',
+                utm_content: urlSearchParams.get('utm_content') || '',
+                utm_term: urlSearchParams.get('utm_term') || '',
+                fbclid: urlSearchParams.get('fbclid') || '',
+                fbeventid: urlSearchParams.get('fbeventid') || '',
+                vtid: urlSearchParams.get('vtid') || ''
+            };
+
+            // 2. Recopilar respuestas del perfil del prospecto
+            const payload = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                objetivo: document.getElementById('objetivo').value,
+                pregunta_modelo: document.querySelector('input[name="q_modelo"]:checked').value,
+                pregunta_capital: document.querySelector('input[name="q_capital"]:checked').value,
+                pregunta_decision: document.querySelector('input[name="q_decision"]:checked').value,
+                pregunta_avanzar: document.querySelector('input[name="q_avanzar"]:checked').value,
+                pregunta_confirmacion: document.querySelector('input[name="q_confirmacion"]:checked').value,
+                ...trackingData // Une las UTMs e IDs de tracking al envío directo
+            };
+
+            // 3. Envío directo al Webhook de tu n8n
+            // NOTA: Reemplaza la URL de abajo por la de tu webhook activo de n8n
+            fetch('TU_URL_WEBHOOK_PRODUCTION_N8N', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                avanzarPasoDos(payload, trackingData);
+            })
+            .catch(error => {
+                console.error('Error in network sync:', error);
+                // Forzamos el paso de todos modos para no arruinar la experiencia del usuario si falla la red
+                avanzarPasoDos(payload, trackingData);
+            });
+        });
+
+        function avanzarPasoDos(payload, trackingData) {
+            // 4. Preparar parámetros URL para autocompletar el calendario de GHL en la segunda página
+            const nextStepParams = new URLSearchParams({
+                first_name: payload.nombre,
+                email: payload.email,
+                phone: payload.whatsapp,
+                ...trackingData // Mantenemos el hilo de atribución de UTMs vivo para la siguiente página
+            });
+
+            // 5. Redirección suave a la página de agendas en tu GitHub Pages
+            window.location.href = 'agenda.html?' + nextStepParams.toString();
+        }
+    </script>
+</body>
+</html>
