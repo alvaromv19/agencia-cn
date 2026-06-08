@@ -1031,20 +1031,12 @@
     return { start: calStart, end: calEnd };
   }
 
-  /* Bundle genérico para cualquier producto (mismo molde que Lazos). */
+      /* Bundle genérico para cualquier producto (mismo molde que Lazos). */
   function _buildProductBundle(opts){
     var rStart = opts.rStart, rEnd = opts.rEnd;
-    var ROAS = opts.ROAS, avg = opts.avg;
-    var sales = opts.salesFn(rStart, rEnd);
-    var results = Math.max(0, Math.round(sales * 0.895));
-    var value   = results * avg;
-    var spend   = results > 0 ? value / ROAS : 0;
-    var cpr     = results > 0 ? spend / results : 0;
-    /* === Variación diaria de CPC y CTR ===
-       Para cada día dentro de la ventana de campaña intersectada con el rango,
-       generamos un cpc/ctr con jitter determinístico (semilla = fecha + producto).
-       Repartimos el spend uniformemente por día y agregamos clicks/impresiones.
-       Resultado: cpc, ctr y costo por resultado cambian según el rango filtrado. */
+    var avg = opts.avg;
+
+    /* === Variación diaria de ROAS, CPC y CTR === */
     var campStart = _stripTime(opts.calWindowFn().end); // inicio de campaña de ventas
     var today     = _stripTime(new Date());
     var dStart    = _stripTime(rStart) < campStart ? campStart : _stripTime(rStart);
@@ -1053,26 +1045,50 @@
     if (dEnd >= dStart) {
       nDays = Math.round((dEnd - dStart) / 86400000) + 1;
     }
-    var clicks = 0, impressions = 0;
-    if (results > 0 && nDays > 0) {
-      var perDay = spend / nDays;
+
+    var results = 0;
+    var value = 0;
+    var spend = 0;
+    var clicks = 0;
+    var impressions = 0;
+
+    if (nDays > 0) {
       var seedKey = opts.seed || 1;
       for (var di = 0; di < nDays; di++) {
         var day = _addDays(dStart, di);
+        var daySales = opts.salesFn(day, day);
+        var dayResults = Math.max(0, Math.round(daySales * 0.895));
+        var dayValue = dayResults * avg;
+
         var seed = ((day.getFullYear()*372 + (day.getMonth()+1)*31 + day.getDate()) * 1315423911) ^ seedKey;
         var r = _mulberry32(seed >>> 0);
-        var cpcJ = opts.cpc * (0.78 + r() * 0.44); // ±22%
-        var ctrJ = opts.ctr * (0.80 + r() * 0.40); // ±20%
-        var dClicks = Math.max(1, Math.round(perDay / cpcJ));
-        var dImps   = Math.round(dClicks / ctrJ);
-        clicks += dClicks;
-        impressions += dImps;
+
+        // El ROAS de este día específico varía entre 1.80 y 2.00
+        var dayRoas = 1.80 + (r() * 0.20); 
+        var daySpend = dayResults > 0 ? dayValue / dayRoas : 0;
+
+        results += dayResults;
+        value += dayValue;
+        spend += daySpend;
+
+        if (daySpend > 0) {
+          var cpcJ = opts.cpc * (0.78 + r() * 0.44); // ±22%
+          var ctrJ = opts.ctr * (0.80 + r() * 0.40); // ±20%
+          var dClicks = Math.max(1, Math.round(daySpend / cpcJ));
+          var dImps   = Math.round(dClicks / ctrJ);
+          clicks += dClicks;
+          impressions += dImps;
+        }
       }
     }
-    var cpc     = clicks > 0 ? spend / clicks : opts.cpc;
+
+    var ROAS = spend > 0 ? value / spend : 0; // ROAS general promediado del periodo
+    var cpr  = results > 0 ? spend / results : 0;
+    var cpc  = clicks > 0 ? spend / clicks : opts.cpc;
     var ctrFrac = impressions > 0 ? clicks / impressions : opts.ctr;
     var reach   = Math.round(impressions * opts.reachFactor);
     var has = results > 0;
+
     var roasStr   = has ? _fmtRoas(ROAS) : DASH;
     var cprStr    = has ? _fmtMoney(cpr) : DASH;
     var spendStr  = _fmtMoney(spend);
