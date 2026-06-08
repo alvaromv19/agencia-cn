@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Evaluación de Perfil | Creamos Negocios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #010308;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Evita scrolls raros durante las transiciones */
+            position: relative;
+        }
+
+        /* Resplandor Azul de Fondo */
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: rgba(34, 116, 242, 0.12); 
+            filter: blur(140px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Barra de Progreso Premium */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f25522, #ffad91);
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 10px rgba(242, 85, 34, 0.5);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            max-width: 120px;
+            height: auto;
+        }
+
+        /* Contenedor Maestro de Pasos */
+        .steps-form {
+            position: relative;
+            min-height: 380px; /* Mantiene estabilidad visual */
+        }
+
+        /* Estilos Base para un Paso Individual */
+        .step {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        visibility 0.4s;
+        }
+
+        /* Estado Activo (Visible) */
+        .step.active {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            position: relative; /* Toma el control del alto de la caja */
+        }
+
+        /* Estado Saliente (Desvanecimiento) */
+        .step.exit {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-30px) scale(0.98);
+        }
+
+        .step-number {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #f25522;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        h2.question-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+            margin-bottom: 25px;
+            color: #ffffff;
+        }
+
+        /* Inputs de Texto Premium */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 12px 0;
+            font-family: inherit;
+            font-size: 1.25rem; /* Cómodo para móvil, evita zoom forzado */
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #f25522;
+        }
+
+        /* Botones de Acción e Interacción */
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button.next-button {
+            background: #f25522;
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button.next-button:hover {
+            background: #ff6a3b;
+            box-shadow: 0 6px 20px rgba(242, 85, 34, 0.3);
+        }
+
+        .press-enter {
+            font-size: 0.8rem;
+            color: #4a5568;
+            display: none; /* Se oculta en móviles, útil en desktop */
+        }
+
+        @media (min-width: 769px) {
+            .press-enter { display: inline; }
+        }
+
+        /* Tarjetas de Selección Tipo Botón */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .option-card:hover {
+            border-color: rgba(242, 85, 34, 0.4);
+            background: rgba(242, 85, 34, 0.02);
+        }
+
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .card-indicator {
+            height: 18px;
+            width: 18px;
+            border: 2px solid #4a5568;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        /* Respuestas Seleccionadas */
+        .option-card input[type="radio"]:checked ~ .card-indicator {
+            border-color: #f25522;
+        }
+
+        .option-card input[type="radio"]:checked ~ .card-indicator::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f25522;
+        }
+
+        .option-card input[type="radio"]:checked ~ .card-text {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .option-card:has(input[type="radio"]:checked) {
+            border-color: #f25522;
+            background: rgba(242, 85, 34, 0.06);
+        }
+
+        /* Footer */
+        .footer-minimal {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.7rem;
+            color: #2d3748;
+            margin-top: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <div class="logo-wrapper">
+            <img src="assets/logo-cn.png" alt="Creamos Negocios" class="logo">
+        </div>
+
+        <form id="dynamicForm" class="steps-form">
+            
+            <div class="step active" data-step="1">
+                <div class="step-number">Pregunta 1 de 9 <span>→</span></div>
+                <h2 class="question-title">¿Cuál es tu nombre completo? *</h2>
+                <div class="input-wrapper">
+                    <input type="text" id="nombre" required placeholder="Escribe tu nombre aquí..." autocomplete="name">
+                </div>
+                <div class="nav-controls">
+                    <button type="button" class="next-button" onclick="nextStep(1)">Ok</button>
+                    <span class="press-enter">presiona INTRO</span>
+                </div>
+            </div>
+
+            <div class="step" data-step="2">
+                <div class="step-number">Pregunta 2 de 9 <span>→</span></div>
+                <h2 class="question-title">¿A qué correo electrónico te enviamos la información de acceso? *</h2>
+                <div class="input-wrapper">
+                    <input type="email" id="email" required placeholder="nombre@ejemplo.com" autocomplete="email">
+                </div>
+                <div class="nav-controls">
+                    <button type="button" class="next-button" onclick="nextStep(2)">Ok</button>
+                    <span class="press-enter">presiona INTRO</span>
+                </div>
+            </div>
+
+            <div class="step" data-step="3">
+                <div class="step-number">Pregunta 3 de 9 <span>→</span></div>
+                <h2 class="question-title">Introduce tu número de WhatsApp (con código de país) *</h2>
+                <div class="input-wrapper">
+                    <input type="tel" id="whatsapp" required placeholder="+51 999 999 999" autocomplete="tel">
+                </div>
+                <div class="nav-controls">
+                    <button type="button" class="next-button" onclick="nextStep(3)">Ok</button>
+                    <span class="press-enter">presiona INTRO</span>
+                </div>
+            </div>
+
+            <div class="step" data-step="4">
+                <div class="step-number">Pregunta 4 de 9 <span>→</span></div>
+                <h2 class="question-title">¿Cuál es tu objetivo principal al adquirir un negocio digital ya validado? *</h2>
+                <div class="input-wrapper">
+                    <input type="text" id="objetivo" required placeholder="Ej: Diversificar ingresos, flujo de caja inmediato...">
+                </div>
+                <div class="nav-controls">
+                    <button type="button" class="next-button" onclick="nextStep(4)">Ok</button>
+                    <span class="press-enter">presiona INTRO</span>
+                </div>
+            </div>
+
+            <div class="step" data-step="5">
+                <div class="step-number">Pregunta 5 de 9 <span>→</span></div>
+                <h2 class="question-title">¿Entendés que este modelo consiste en adquirir negocios ya validados, y no en elegir ideas a gusto personal? *</h2>
+                <div class="options-list">
+                    <label class="option-card">
+                        <input type="radio" name="q_modelo" value="Si, busco resultados, no elegir nicho" required class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">Sí, busco resultados, no elegir nicho.</span>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="q_modelo" value="No, quiero elegir la idea" class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">No, quiero elegir la idea de negocio.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="step" data-step="6">
+                <div class="step-number">Pregunta 6 de 9 <span>→</span></div>
+                <h2 class="question-title">¿Contás actualmente con $3.000 USD para adquirir un negocio digital validado con acompañamiento garantizado? *</h2>
+                <div class="options-list">
+                    <label class="option-card">
+                        <input type="radio" name="q_capital" value="Si, cuento actualmente con $3.000 USD" required class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">Sí, cuento actualmente con el capital listo.</span>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="q_capital" value="No, no cuento con el capital" class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">No dispongo de ese capital en este momento.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="step" data-step="7">
+                <div class="step-number">Pregunta 7 de 9 <span>→</span></div>
+                <h2 class="question-title">¿Sos la persona que toma la decisión final sobre esta inversión? *</h2>
+                <div class="options-list">
+                    <label class="option-card">
+                        <input type="radio" name="q_decision" value="Si, soy el unico tomador de decision" required class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">Sí, soy el único tomador de decisión.</span>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="q_decision" value="No, necesito validarlo con un socio / pareja" class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">No, necesito evaluarlo con un socio o pareja.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="step" data-step="8">
+                <div class="step-number">Pregunta 8 de 9 <span>→</span></div>
+                <h2 class="question-title">Contamos con cupos limitados. Si todo encaja por ambos lados, ¿estarías dispuesto/a a avanzar con la compra? *</h2>
+                <div class="options-list">
+                    <label class="option-card">
+                        <input type="radio" name="q_avanzar" value="Si" required class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">Sí, estoy completamente dispuesto.</span>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="q_avanzar" value="No" class="auto-advance">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">No por ahora.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="step" data-step="9">
+                <div class="step-number">Último Paso <span>→</span></div>
+                <h2 class="question-title">Te enviaremos un WhatsApp para confirmar. Si no respondes, la cita se cancelará automáticamente. ¿Entiendes el compromiso? *</h2>
+                <div class="options-list">
+                    <label class="option-card">
+                        <input type="radio" name="q_confirmacion" value="Si, entiendo y confirmare" required>
+                        <span class="card-indicator"></span>
+                        <span class="card-text">Sí, entiendo perfectamente y confirmaré.</span>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="q_confirmacion" value="No podre responder">
+                        <span class="card-indicator"></span>
+                        <span class="card-text">No podré responder al mensaje.</span>
+                    </label>
+                </div>
+                <div class="nav-controls" style="margin-top: 25px;">
+                    <button type="submit" class="next-button" id="finalSubmitBtn">Enviar y Ver Agenda</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="footer-minimal">
+        &copy; 2026 Creamos Negocios. Todos los derechos reservados.
+    </div>
+
+    <script>
+        const totalSteps = 9;
+        
+        // Actualizar la barra de progreso al cargar la página
+        function updateProgressBar(currentStep) {
+            const percentage = ((currentStep - 1) / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        // Manejo de avance de pasos con validación nativa
+        function nextStep(currentStepNum) {
+            const currentStepEl = document.querySelector(`.step[data-step="${currentStepNum}"]`);
+            const input = currentStepEl.querySelector('input');
+            
+            // Validar si el input actual es válido
+            if (input && !input.checkValidity()) {
+                input.reportValidity();
+                return;
+            }
+
+            // Realizar transición de salida
+            currentStepEl.classList.add('exit');
+            
+            setTimeout(() => {
+                currentStepEl.classList.remove('active', 'exit');
+                
+                const nextStepNum = currentStepNum + 1;
+                const nextStepEl = document.querySelector(`.step[data-step="${nextStepNum}"]`);
+                
+                if (nextStepEl) {
+                    nextStepEl.classList.add('active');
+                    updateProgressBar(nextStepNum);
+                    
+                    // Foco automático al siguiente input para agilizar en desktop/móvil
+                    const nextInput = nextStepEl.querySelector('input');
+                    if (nextInput) nextInput.focus();
+                }
+            }, 400); // Duración exacta de la transición CSS
+        }
+
+        // Detectar presiones de tecla Enter en campos de texto
+        document.querySelectorAll('.step input').forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
+                    nextStep(stepNum);
+                }
+            });
+        });
+
+        // Configuración de auto-avance para las opciones de selección de radio
+        document.querySelectorAll('.auto-advance').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
+                // Retraso de 400ms para permitir que el usuario vea visualmente la opción seleccionada
+                setTimeout(() => {
+                    nextStep(stepNum);
+                }, 400);
+            });
+        });
+
+        // Envío final del formulario completo
+        document.getElementById('dynamicForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('finalSubmitBtn');
+            submitBtn.innerText = 'Guardando perfil...';
+            submitBtn.disabled = true;
+
+            // Actualizar progreso al 100%
+            document.getElementById('progressBar').style.width = '100%';
+
+            // Recopilar parámetros de atribución
+            const urlSearchParams = new URLSearchParams(window.location.search);
+            const trackingData = {
+                utm_source: urlSearchParams.get('utm_source') || '',
+                utm_medium: urlSearchParams.get('utm_medium') || '',
+                utm_campaign: urlSearchParams.get('utm_campaign') || '',
+                utm_content: urlSearchParams.get('utm_content') || '',
+                utm_term: urlSearchParams.get('utm_term') || '',
+                fbclid: urlSearchParams.get('fbclid') || '',
+                fbeventid: urlSearchParams.get('fbeventid') || '',
+                vtid: urlSearchParams.get('vtid') || ''
+            };
+
+            // Estructura limpia de datos
+            const payload = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                objetivo: document.getElementById('objetivo').value,
+                pregunta_modelo: document.querySelector('input[name="q_modelo"]:checked').value,
+                pregunta_capital: document.querySelector('input[name="q_capital"]:checked').value,
+                pregunta_decision: document.querySelector('input[name="q_decision"]:checked').value,
+                pregunta_avanzar: document.querySelector('input[name="q_avanzar"]:checked').value,
+                pregunta_confirmacion: document.querySelector('input[name="q_confirmacion"]:checked').value,
+                ...trackingData
+            };
+
+            // Envío sincronizado a n8n
+            fetch('TU_URL_WEBHOOK_PRODUCTION_N8N', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                finalizarYRedirigir(payload, trackingData);
+            })
+            .catch(error => {
+                console.error('Network synchronization fallback initiated:', error);
+                finalizarYRedirigir(payload, trackingData);
+            });
+        });
+
+        function finalizarYRedirigir(payload, trackingData) {
+            // Empaquetar datos para inyectar en el autocompletado de GHL en el paso 2
+            const finalParams = new URLSearchParams({
+                first_name: payload.nombre,
+                email: payload.email,
+                phone: payload.whatsapp,
+                ...trackingData
+            });
+
+            window.location.href = 'agenda.html?' + finalParams.toString();
+        }
+
+        // Inicializar barra en el paso 1
+        updateProgressBar(1);
+    </script>
+</body>
+</html>
