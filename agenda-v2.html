@@ -528,7 +528,7 @@ document.getElementById('dynamicForm').addEventListener('submit', function(e) {
 
     // 1. Envío de datos al Hook (HO) de entrada en n8n
     // REEMPLAZAR POR TU URL DE WEBHOOK DE PRODUCCIÓN EN N8N
-    fetch('TU_URL_WEBHOOK_PRODUCTION_N8N', {
+    fetch('https://n8n.creamosnegociosrentables.com/webhook/cualificacion-creamos-negocios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ghlPayload)
