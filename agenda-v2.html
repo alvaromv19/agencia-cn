@@ -441,133 +441,117 @@
 
     <script>
         const totalSteps = 9;
+
+function updateProgressBar(currentStep) {
+    const percentage = ((currentStep - 1) / totalSteps) * 100;
+    document.getElementById('progressBar').style.width = percentage + '%';
+}
+
+function nextStep(currentStepNum) {
+    const currentStepEl = document.querySelector(`.step[data-step="${currentStepNum}"]`);
+    const input = currentStepEl.querySelector('input');
+    
+    if (input && !input.checkValidity()) {
+        input.reportValidity();
+        return;
+    }
+
+    currentStepEl.classList.add('exit');
+    
+    setTimeout(() => {
+        currentStepEl.classList.remove('active', 'exit');
         
-        // Actualizar la barra de progreso al cargar la página
-        function updateProgressBar(currentStep) {
-            const percentage = ((currentStep - 1) / totalSteps) * 100;
-            document.getElementById('progressBar').style.width = percentage + '%';
-        }
-
-        // Manejo de avance de pasos con validación nativa
-        function nextStep(currentStepNum) {
-            const currentStepEl = document.querySelector(`.step[data-step="${currentStepNum}"]`);
-            const input = currentStepEl.querySelector('input');
+        const nextStepNum = currentStepNum + 1;
+        const nextStepEl = document.querySelector(`.step[data-step="${nextStepNum}"]`);
+        
+        if (nextStepEl) {
+            nextStepEl.classList.add('active');
+            updateProgressBar(nextStepNum);
             
-            // Validar si el input actual es válido
-            if (input && !input.checkValidity()) {
-                input.reportValidity();
-                return;
-            }
-
-            // Realizar transición de salida
-            currentStepEl.classList.add('exit');
-            
-            setTimeout(() => {
-                currentStepEl.classList.remove('active', 'exit');
-                
-                const nextStepNum = currentStepNum + 1;
-                const nextStepEl = document.querySelector(`.step[data-step="${nextStepNum}"]`);
-                
-                if (nextStepEl) {
-                    nextStepEl.classList.add('active');
-                    updateProgressBar(nextStepNum);
-                    
-                    // Foco automático al siguiente input para agilizar en desktop/móvil
-                    const nextInput = nextStepEl.querySelector('input');
-                    if (nextInput) nextInput.focus();
-                }
-            }, 400); // Duración exacta de la transición CSS
+            const nextInput = nextStepEl.querySelector('input');
+            if (nextInput) nextInput.focus();
         }
+    }, 400);
+}
 
-        // Detectar presiones de tecla Enter en campos de texto
-        document.querySelectorAll('.step input').forEach(input => {
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
-                    nextStep(stepNum);
-                }
-            });
-        });
-
-        // Configuración de auto-avance para las opciones de selección de radio
-        document.querySelectorAll('.auto-advance').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
-                // Retraso de 400ms para permitir que el usuario vea visualmente la opción seleccionada
-                setTimeout(() => {
-                    nextStep(stepNum);
-                }, 400);
-            });
-        });
-
-        // Envío final del formulario completo
-        document.getElementById('dynamicForm').addEventListener('submit', function(e) {
+document.querySelectorAll('.step input').forEach(input => {
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            
-            const submitBtn = document.getElementById('finalSubmitBtn');
-            submitBtn.innerText = 'Guardando perfil...';
-            submitBtn.disabled = true;
-
-            // Actualizar progreso al 100%
-            document.getElementById('progressBar').style.width = '100%';
-
-            // Recopilar parámetros de atribución
-            const urlSearchParams = new URLSearchParams(window.location.search);
-            const trackingData = {
-                utm_source: urlSearchParams.get('utm_source') || '',
-                utm_medium: urlSearchParams.get('utm_medium') || '',
-                utm_campaign: urlSearchParams.get('utm_campaign') || '',
-                utm_content: urlSearchParams.get('utm_content') || '',
-                utm_term: urlSearchParams.get('utm_term') || '',
-                fbclid: urlSearchParams.get('fbclid') || '',
-                fbeventid: urlSearchParams.get('fbeventid') || '',
-                vtid: urlSearchParams.get('vtid') || ''
-            };
-
-            // Estructura limpia de datos
-            const payload = {
-                nombre: document.getElementById('nombre').value,
-                email: document.getElementById('email').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                objetivo: document.getElementById('objetivo').value,
-                pregunta_modelo: document.querySelector('input[name="q_modelo"]:checked').value,
-                pregunta_capital: document.querySelector('input[name="q_capital"]:checked').value,
-                pregunta_decision: document.querySelector('input[name="q_decision"]:checked').value,
-                pregunta_avanzar: document.querySelector('input[name="q_avanzar"]:checked').value,
-                pregunta_confirmacion: document.querySelector('input[name="q_confirmacion"]:checked').value,
-                ...trackingData
-            };
-
-            // Envío sincronizado a n8n
-            fetch('TU_URL_WEBHOOK_PRODUCTION_N8N', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                finalizarYRedirigir(payload, trackingData);
-            })
-            .catch(error => {
-                console.error('Network synchronization fallback initiated:', error);
-                finalizarYRedirigir(payload, trackingData);
-            });
-        });
-
-        function finalizarYRedirigir(payload, trackingData) {
-            // Empaquetar datos para inyectar en el autocompletado de GHL en el paso 2
-            const finalParams = new URLSearchParams({
-                first_name: payload.nombre,
-                email: payload.email,
-                phone: payload.whatsapp,
-                ...trackingData
-            });
-
-            window.location.href = 'calendar.html?' + finalParams.toString();
+            const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
+            nextStep(stepNum);
         }
+    });
+});
 
-        // Inicializar barra en el paso 1
-        updateProgressBar(1);
+document.querySelectorAll('.auto-advance').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const stepNum = parseInt(this.closest('.step').getAttribute('data-step'));
+        setTimeout(() => {
+            nextStep(stepNum);
+        }, 400);
+    });
+});
+
+// ENVÍO DEL FORMULARIO Y CONEXIÓN CON N8N / GHL
+document.getElementById('dynamicForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('finalSubmitBtn');
+    submitBtn.innerText = 'Guardando perfil...';
+    submitBtn.disabled = true;
+    document.getElementById('progressBar').style.width = '100%';
+
+    // Extraer parámetros de tracking originales de la URL
+    const urlSearchParams = new URLSearchParams(window.location.search);
+
+    // Mapeo exacto estructurado con las claves nativas de tu GHL
+    const ghlPayload = {
+        first_name: document.getElementById('nombre').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('whatsapp').value,
+        cual_es_tu_objetivo_al_adquirir_un_negocio_digital_ya_validado_ej_generar_flujo_de_caja_mensual_diversificar_ingresos_reemplazar_ingresos_actuales_escalar_con_publicidad_etc: document.getElementById('objetivo').value,
+        entendes_que_este_modelo_consiste_en_adquirir_negocios_ya_validados_y_no_en_elegir_ideas_o_nichos_a_gusto_personal: document.querySelector('input[name="q_modelo"]:checked').value,
+        contas_actualmente_con_3_000_usd_para_adquirir_un_negocio_digital_validado_con_acompanamiento_garantizado_por_contrato_hasta_recuperar_tu_inversion: document.querySelector('input[name="q_capital"]:checked').value,
+        sos_la_persona_que_toma_la_decision_final_sobre_esta_inversion: document.querySelector('input[name="q_decision"]:checked').value,
+        trabajamos_con_cupos_limitados_de_negocios_digitales_ya_validados_solo_avanzamos_con_personas_listas_para_decidir_en_el_corto_plazo_si_todo_encaja_por_ambos_lados_estarias_dispuesto_a_a_avanzar_con_la_compra: document.querySelector('input[name="q_avanzar"]:checked').value,
+        te_enviaremos_un_mensaje_por_whats_app_para_confirmar_tu_llamada_si_no_respondes_tu_cita_sera_cancelada_automaticamente_esto_nos_ayuda_a_asegurarnos_de_hablar_solo_con_personas_reales_y_comprometidas: document.querySelector('input[name="q_confirmacion"]:checked').value,
+        fbclid: urlSearchParams.get('fbclid') || '',
+        utm_content: urlSearchParams.get('utm_content') || '',
+        utm_campaign: urlSearchParams.get('utm_campaign') || '',
+        utm_source: urlSearchParams.get('utm_source') || '',
+        utm_medium: urlSearchParams.get('utm_medium') || '',
+        utm_term: urlSearchParams.get('utm_term') || '',
+        fb_event_id: urlSearchParams.get('fb_event_id') || '',
+        vtid: urlSearchParams.get('vtid') || ''
+    };
+
+    // 1. Envío de datos al Hook (HO) de entrada en n8n
+    // REEMPLAZAR POR TU URL DE WEBHOOK DE PRODUCCIÓN EN N8N
+    fetch('TU_URL_WEBHOOK_PRODUCTION_N8N', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ghlPayload)
+    })
+    .then(() => {
+        redireccionarAlCalendario(ghlPayload);
+    })
+    .catch(error => {
+        console.error('Sincronización en segundo plano:', error);
+        // Avanza el flujo aunque falle la red para salvaguardar la experiencia de usuario
+        redireccionarAlCalendario(ghlPayload);
+    });
+});
+
+function redireccionarAlCalendario(payload) {
+    // Convertir todo nuestro payload estructurado en parámetros URL de destino
+    const finalUrlParams = new URLSearchParams(payload);
+
+    // Redirección directa hacia tu segunda página pasando la data limpia
+    window.location.href = 'calendar.html?' + finalUrlParams.toString();
+}
+
+updateProgressBar(1);
     </script>
 </body>
 </html>
