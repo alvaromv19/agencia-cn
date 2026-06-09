@@ -186,25 +186,61 @@
             }
         }
 
+        async function initCalendar() {
+            const today = new Date();
+            const startTimestamp = today.getTime();
+            const endTimestamp = startTimestamp + (14 * 24 * 60 * 60 * 1000);
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            try {
+                const response = await fetch(`${WEBHOOK_GET_SLOTS}?startDate=${startTimestamp}&endDate=${endTimestamp}&timezone=${userTimezone}`);
+                let data = await response.json();
+                
+                // --- MECANISMO DE DEFENSA ---
+                // 1. Si n8n mandó los datos dentro de un Array [ {...} ], lo extraemos.
+                if (Array.isArray(data) && data.length > 0) {
+                    data = data[0];
+                }
+                
+                // 2. Si olvidaste cambiar el "Respond" en n8n, nos avisará en lugar de quedarse en blanco.
+                if (data.message && data.message.includes("Workflow got started")) {
+                    console.error("n8n está devolviendo el mensaje por defecto en lugar de los datos del nodo HTTP.");
+                }
+
+                // Asignamos la data limpia
+                availableSlotsData = data; 
+                
+                renderDatesGrid();
+                document.getElementById('loader').style.display = 'none';
+
+            } catch (error) {
+                console.error("Error cargando horarios o error de CORS:", error);
+                document.getElementById('timesContainer').innerHTML = "<p style='color: #f25522;'>Error conectando con la agenda. Intenta recargar la página.</p>";
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
         function renderDatesGrid() {
             const container = document.getElementById('datesContainer');
             container.innerHTML = '';
 
-            // Renderizar los próximos 10 días laborables desde hoy
             let daysRendered = 0;
             let currentCursor = new Date();
 
             while (daysRendered < 10) {
-                const dateKey = currentCursor.toISOString().split('T')[0]; // "2026-06-10"
+                // FORMATEO SEGURO DE FECHA LOCAL (Para que coincida exacto con GHL sin importar la hora de la noche)
+                const year = currentCursor.getFullYear();
+                const month = String(currentCursor.getMonth() + 1).padStart(2, '0');
+                const day = String(currentCursor.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`; 
+
                 const hasSlots = availableSlotsData[dateKey] && availableSlotsData[dateKey].slots && availableSlotsData[dateKey].slots.length > 0;
 
-                // Si hay slots en este día, o si decides mostrar días vacíos deshabilitados:
                 if (hasSlots) {
                     const dayObj = currentCursor;
                     const btn = document.createElement('div');
                     btn.className = 'date-btn';
                     
-                    // Formatear día (Ej: LUN, 10)
                     const dayName = new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(dayObj);
                     const dayNum = dayObj.getDate();
 
@@ -222,51 +258,12 @@
 
                 currentCursor.setDate(currentCursor.getDate() + 1);
                 
-                // Freno de emergencia por si el calendario está vacío
                 if((currentCursor.getTime() - new Date().getTime()) > (30 * 24 * 60 * 60 * 1000)) break; 
             }
 
             if (container.innerHTML === '') {
                 container.innerHTML = "<p style='color: #8892b0; font-size: 0.9rem; grid-column: 1 / -1;'>No hay disponibilidad esta semana.</p>";
             }
-        }
-
-        function renderTimesGrid(dateKey) {
-            const container = document.getElementById('timesContainer');
-            document.getElementById('confirmBox').style.display = 'none';
-            container.innerHTML = '';
-
-            const slots = availableSlotsData[dateKey].slots;
-            
-            const grid = document.createElement('div');
-            grid.className = 'times-grid';
-
-            slots.forEach(slotIso => {
-                // slotIso = "2026-06-10T10:00:00-05:00"
-                const dateObj = new Date(slotIso);
-                const timeString = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true }).format(dateObj);
-
-                const btn = document.createElement('button');
-                btn.className = 'time-btn';
-                btn.innerText = timeString;
-
-                btn.onclick = () => {
-                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    
-                    // GHL requiere startTime y endTime. Calculamos 1 hora después para el endTime
-                    selectedStartTime = slotIso;
-                    const endDateObj = new Date(dateObj.getTime() + (60 * 60 * 1000));
-                    selectedEndTime = endDateObj.toISOString();
-
-                    document.getElementById('selectedTimeText').innerText = `${timeString} - ${new Intl.DateTimeFormat('es-ES', { weekday: 'long', month: 'long', day: 'numeric' }).format(dateObj)}`;
-                    document.getElementById('confirmBox').style.display = 'block';
-                };
-
-                grid.appendChild(btn);
-            });
-
-            container.appendChild(grid);
         }
 
         // ACCIÓN FINAL: AGENDAR
