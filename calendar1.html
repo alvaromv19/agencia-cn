@@ -109,8 +109,7 @@
 
             <div>
                 <h3 class="panel-title">1. Elige un día</h3>
-                <div class="dates-grid" id="datesContainer">
-                    </div>
+                <div class="dates-grid" id="datesContainer"></div>
             </div>
 
             <div>
@@ -137,7 +136,7 @@
     </div>
 
     <script>
-        // URLs DE TUS WEBHOOKS DE N8N (Reemplaza estas variables)
+        // URLs DE TUS WEBHOOKS DE N8N
         const WEBHOOK_GET_SLOTS = "https://n8n.creamosnegociosrentables.com/webhook/obtener-horarios"; 
         const WEBHOOK_BOOK_APPT = "https://n8n.creamosnegociosrentables.com/webhook/agendar-cita";
 
@@ -145,7 +144,7 @@
         let selectedStartTime = null;
         let selectedEndTime = null;
 
-        // Extraer parámetros de la URL (Nombre, Email, WhatsApp pasados por index.html)
+        // Extraer parámetros
         const urlParams = new URLSearchParams(window.location.search);
         const contactData = {
             firstName: urlParams.get('first_name') || '',
@@ -153,38 +152,11 @@
             phone: urlParams.get('phone') || ''
         };
 
-        // Redirigir si alguien entra directo sin pasar por el paso 1
         if (!contactData.email) {
             window.location.href = 'index_v2.html'; 
         }
 
         document.addEventListener("DOMContentLoaded", initCalendar);
-
-        async function initCalendar() {
-            // 1. Calcular ventana de 14 días en Timestamps (Requerido por GHL)
-            const today = new Date();
-            const startTimestamp = today.getTime();
-            const endTimestamp = startTimestamp + (14 * 24 * 60 * 60 * 1000);
-            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-            try {
-                // 2. Fetch al Webhook A de n8n
-                const response = await fetch(`${WEBHOOK_GET_SLOTS}?startDate=${startTimestamp}&endDate=${endTimestamp}&timezone=${userTimezone}`);
-                const data = await response.json();
-                
-                // data debería devolver el objeto de GHL, típicamente { "2026-06-10": { "slots": ["2026-06-10T10:00:00Z"] } }
-                // Mapeamos esa disponibilidad
-                availableSlotsData = data; 
-                
-                renderDatesGrid();
-                document.getElementById('loader').style.display = 'none';
-
-            } catch (error) {
-                console.error("Error cargando horarios:", error);
-                document.getElementById('timesContainer').innerHTML = "<p style='color: #f25522;'>Error conectando con la agenda. Intenta recargar la página.</p>";
-                document.getElementById('loader').style.display = 'none';
-            }
-        }
 
         async function initCalendar() {
             const today = new Date();
@@ -196,18 +168,15 @@
                 const response = await fetch(`${WEBHOOK_GET_SLOTS}?startDate=${startTimestamp}&endDate=${endTimestamp}&timezone=${userTimezone}`);
                 let data = await response.json();
                 
-                // --- MECANISMO DE DEFENSA ---
-                // 1. Si n8n mandó los datos dentro de un Array [ {...} ], lo extraemos.
+                // Desempaquetado seguro si n8n envía un Array
                 if (Array.isArray(data) && data.length > 0) {
                     data = data[0];
                 }
-                
-                // 2. Si olvidaste cambiar el "Respond" en n8n, nos avisará en lugar de quedarse en blanco.
+
                 if (data.message && data.message.includes("Workflow got started")) {
-                    console.error("n8n está devolviendo el mensaje por defecto en lugar de los datos del nodo HTTP.");
+                    console.error("Alerta: n8n está devolviendo el mensaje por defecto.");
                 }
 
-                // Asignamos la data limpia
                 availableSlotsData = data; 
                 
                 renderDatesGrid();
@@ -215,7 +184,7 @@
 
             } catch (error) {
                 console.error("Error cargando horarios o error de CORS:", error);
-                document.getElementById('timesContainer').innerHTML = "<p style='color: #f25522;'>Error conectando con la agenda. Intenta recargar la página.</p>";
+                document.getElementById('timesContainer').innerHTML = "<p style='color: #f25522;'>Error de conexión. Asegúrate de que el CORS en n8n esté configurado con * y el flujo esté activo.</p>";
                 document.getElementById('loader').style.display = 'none';
             }
         }
@@ -228,7 +197,6 @@
             let currentCursor = new Date();
 
             while (daysRendered < 10) {
-                // FORMATEO SEGURO DE FECHA LOCAL (Para que coincida exacto con GHL sin importar la hora de la noche)
                 const year = currentCursor.getFullYear();
                 const month = String(currentCursor.getMonth() + 1).padStart(2, '0');
                 const day = String(currentCursor.getDate()).padStart(2, '0');
@@ -266,6 +234,42 @@
             }
         }
 
+        function renderTimesGrid(dateKey) {
+            const container = document.getElementById('timesContainer');
+            document.getElementById('confirmBox').style.display = 'none';
+            container.innerHTML = '';
+
+            const slots = availableSlotsData[dateKey].slots;
+            
+            const grid = document.createElement('div');
+            grid.className = 'times-grid';
+
+            slots.forEach(slotIso => {
+                const dateObj = new Date(slotIso);
+                const timeString = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true }).format(dateObj);
+
+                const btn = document.createElement('button');
+                btn.className = 'time-btn';
+                btn.innerText = timeString;
+
+                btn.onclick = () => {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    
+                    selectedStartTime = slotIso;
+                    const endDateObj = new Date(dateObj.getTime() + (60 * 60 * 1000));
+                    selectedEndTime = endDateObj.toISOString();
+
+                    document.getElementById('selectedTimeText').innerText = `${timeString} - ${new Intl.DateTimeFormat('es-ES', { weekday: 'long', month: 'long', day: 'numeric' }).format(dateObj)}`;
+                    document.getElementById('confirmBox').style.display = 'block';
+                };
+
+                grid.appendChild(btn);
+            });
+
+            container.appendChild(grid);
+        }
+
         // ACCIÓN FINAL: AGENDAR
         document.getElementById('btnBookNow').addEventListener('click', async () => {
             const btn = document.getElementById('btnBookNow');
@@ -282,7 +286,6 @@
             };
 
             try {
-                // Fetch al Webhook B de n8n
                 const response = await fetch(WEBHOOK_BOOK_APPT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -290,7 +293,6 @@
                 });
 
                 if(response.ok) {
-                    // Cita Exitosa
                     document.getElementById('calendarUI').style.display = 'none';
                     document.getElementById('header-area').style.display = 'none';
                     document.getElementById('successState').style.display = 'flex';
