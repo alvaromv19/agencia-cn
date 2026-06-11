@@ -505,11 +505,15 @@ document.getElementById('dynamicForm').addEventListener('submit', function(e) {
     // Extraer parámetros de tracking originales de la URL
     const urlSearchParams = new URLSearchParams(window.location.search);
 
+    // Detecta la versión del A/B test según la ruta. /agenda-v2 -> landing-v2, cualquier otra -> landing-v1
+    const landingTag = window.location.pathname.includes('v2') ? 'landing-v2' : 'landing-v1';
+
     // Mapeo exacto estructurado con las claves nativas de tu GHL
     const ghlPayload = {
         first_name: document.getElementById('nombre').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('whatsapp').value,
+        landing_version: landingTag,
         cual_es_tu_objetivo_al_adquirir_un_negocio_digital_ya_validado_ej_generar_flujo_de_caja_mensual_diversificar_ingresos_reemplazar_ingresos_actuales_escalar_con_publicidad_etc: document.getElementById('objetivo').value,
         entendes_que_este_modelo_consiste_en_adquirir_negocios_ya_validados_y_no_en_elegir_ideas_o_nichos_a_gusto_personal: document.querySelector('input[name="q_modelo"]:checked').value,
         contas_actualmente_con_3_000_usd_para_adquirir_un_negocio_digital_validado_con_acompanamiento_garantizado_por_contrato_hasta_recuperar_tu_inversion: document.querySelector('input[name="q_capital"]:checked').value,
