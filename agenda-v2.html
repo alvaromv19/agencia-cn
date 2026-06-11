@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Evaluación de Perfil | Creamos Negocios</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { -webkit-text-size-adjust: 100%; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -63,6 +64,7 @@
             width: 100%;
             max-width: 620px;
             padding: 40px 24px;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -156,6 +158,19 @@
             font-size: 1.25rem; /* Cómodo para móvil, evita zoom forzado */
             outline: none;
             transition: border-color 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
+        }
+
+        /* Evita el recuadro blanco/amarillo del autocompletado de iOS/Safari sobre el tema oscuro */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #fff;
+            -webkit-box-shadow: 0 0 0 1000px #010308 inset;
+            caret-color: #fff;
+            transition: background-color 9999s ease-in-out 0s;
         }
 
         input:focus {
@@ -186,6 +201,10 @@
         button.next-button:hover {
             background: #ff6a3b;
             box-shadow: 0 6px 20px rgba(242, 85, 34, 0.3);
+        }
+
+        button.next-button:active {
+            transform: scale(0.98);
         }
 
         .press-enter {
@@ -220,6 +239,11 @@
         .option-card:hover {
             border-color: rgba(242, 85, 34, 0.4);
             background: rgba(242, 85, 34, 0.02);
+        }
+
+        .option-card:active {
+            transform: scale(0.99);
+            border-color: rgba(242, 85, 34, 0.6);
         }
 
         .option-card input[type="radio"] {
@@ -335,7 +359,7 @@
 
             <div class="step" data-step="4">
                 <div class="step-number">Pregunta 4 de 9 <span>→</span></div>
-                <h2 class="question-title">¿Cuál es tu objetivo principal al adquirir un negocio digital ya validado? *</h2>
+                <h2 class="question-title">¿Cuál es tu objetivo al adquirir un negocio digital ya validado? (ej: generar flujo de caja mensual, diversificar ingresos, reemplazar ingresos actuales, escalar con publicidad, etc.) *</h2>
                 <div class="input-wrapper">
                     <input type="text" id="objetivo" required placeholder="Ej: Diversificar ingresos, flujo de caja inmediato...">
                 </div>
@@ -347,34 +371,34 @@
 
             <div class="step" data-step="5">
                 <div class="step-number">Pregunta 5 de 9 <span>→</span></div>
-                <h2 class="question-title">¿Entendés que este modelo consiste en adquirir negocios ya validados, y no en elegir ideas a gusto personal? *</h2>
+                <h2 class="question-title">¿Entendés que este modelo consiste en adquirir negocios ya validados, y no en elegir ideas o nichos a gusto personal? *</h2>
                 <div class="options-list">
                     <label class="option-card">
-                        <input type="radio" name="q_modelo" value="Si, busco resultados, no elegir nicho" required class="auto-advance">
+                        <input type="radio" name="q_modelo" value="Sí, busco resultados, no elegir nicho" required class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">Sí, busco resultados, no elegir nicho.</span>
+                        <span class="card-text">Sí, busco resultados, no elegir nicho</span>
                     </label>
                     <label class="option-card">
-                        <input type="radio" name="q_modelo" value="No, quiero elegir la idea" class="auto-advance">
+                        <input type="radio" name="q_modelo" value="No, quiero elegir la idea (En ese caso, NO podemos ayudarte)." class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">No, quiero elegir la idea de negocio.</span>
+                        <span class="card-text">No, quiero elegir la idea (En ese caso, NO podemos ayudarte).</span>
                     </label>
                 </div>
             </div>
 
             <div class="step" data-step="6">
                 <div class="step-number">Pregunta 6 de 9 <span>→</span></div>
-                <h2 class="question-title">¿Contás actualmente con $3.000 USD para adquirir un negocio digital validado con acompañamiento garantizado? *</h2>
+                <h2 class="question-title">¿Contás actualmente con $3.000 USD para adquirir un negocio digital validado con acompañamiento garantizado por contrato hasta recuperar tu inversión? *</h2>
                 <div class="options-list">
                     <label class="option-card">
-                        <input type="radio" name="q_capital" value="Si, cuento actualmente con $3.000 USD" required class="auto-advance">
+                        <input type="radio" name="q_capital" value="Sí, cuento actualmente con $3.000 USD para invertir en un negocio digital validado." required class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">Sí, cuento actualmente con el capital listo.</span>
+                        <span class="card-text">Sí, cuento actualmente con $3.000 USD para invertir en un negocio digital validado.</span>
                     </label>
                     <label class="option-card">
-                        <input type="radio" name="q_capital" value="No, no cuento con el capital" class="auto-advance">
+                        <input type="radio" name="q_capital" value="No, no cuento con $3.000 USD. (Por favor NO agendes. Solo trabajamos con personas listas para invertir en negocios que ya generan ventas)." class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">No dispongo de ese capital en este momento.</span>
+                        <span class="card-text">No, no cuento con $3.000 USD. (Por favor NO agendes. Solo trabajamos con personas listas para invertir en negocios que ya generan ventas).</span>
                     </label>
                 </div>
             </div>
@@ -384,48 +408,48 @@
                 <h2 class="question-title">¿Sos la persona que toma la decisión final sobre esta inversión? *</h2>
                 <div class="options-list">
                     <label class="option-card">
-                        <input type="radio" name="q_decision" value="Si, soy el unico tomador de decision" required class="auto-advance">
+                        <input type="radio" name="q_decision" value="Sí, soy el único tomador de decisión" required class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">Sí, soy el único tomador de decisión.</span>
+                        <span class="card-text">Sí, soy el único tomador de decisión</span>
                     </label>
                     <label class="option-card">
                         <input type="radio" name="q_decision" value="No, necesito validarlo con un socio / pareja" class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">No, necesito evaluarlo con un socio o pareja.</span>
+                        <span class="card-text">No, necesito validarlo con un socio / pareja</span>
                     </label>
                 </div>
             </div>
 
             <div class="step" data-step="8">
                 <div class="step-number">Pregunta 8 de 9 <span>→</span></div>
-                <h2 class="question-title">Contamos con cupos limitados. Si todo encaja por ambos lados, ¿estarías dispuesto/a a avanzar con la compra? *</h2>
+                <h2 class="question-title">Trabajamos con cupos limitados de negocios digitales ya validados. Solo avanzamos con personas listas para decidir en el corto plazo. Si todo encaja por ambos lados, ¿estarías dispuesto/a a avanzar con la compra? *</h2>
                 <div class="options-list">
                     <label class="option-card">
-                        <input type="radio" name="q_avanzar" value="Si" required class="auto-advance">
+                        <input type="radio" name="q_avanzar" value="Sí" required class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">Sí, estoy completamente dispuesto.</span>
+                        <span class="card-text">Sí</span>
                     </label>
                     <label class="option-card">
                         <input type="radio" name="q_avanzar" value="No" class="auto-advance">
                         <span class="card-indicator"></span>
-                        <span class="card-text">No por ahora.</span>
+                        <span class="card-text">No</span>
                     </label>
                 </div>
             </div>
 
             <div class="step" data-step="9">
                 <div class="step-number">Último Paso <span>→</span></div>
-                <h2 class="question-title">Te enviaremos un WhatsApp para confirmar. Si no respondes, la cita se cancelará automáticamente. ¿Entiendes el compromiso? *</h2>
+                <h2 class="question-title">Te enviaremos un mensaje por WhatsApp para confirmar tu llamada. Si no respondes, tu cita será cancelada automáticamente. Esto nos ayuda a asegurarnos de hablar solo con personas reales y comprometidas. *</h2>
                 <div class="options-list">
                     <label class="option-card">
-                        <input type="radio" name="q_confirmacion" value="Si, entiendo y confirmare" required>
+                        <input type="radio" name="q_confirmacion" value="Sí, entiendo. Confirmaré la llamada." required>
                         <span class="card-indicator"></span>
-                        <span class="card-text">Sí, entiendo perfectamente y confirmaré.</span>
+                        <span class="card-text">Sí, entiendo. Confirmaré la llamada.</span>
                     </label>
                     <label class="option-card">
-                        <input type="radio" name="q_confirmacion" value="No podre responder">
+                        <input type="radio" name="q_confirmacion" value="No, no podré responder.">
                         <span class="card-indicator"></span>
-                        <span class="card-text">No podré responder al mensaje.</span>
+                        <span class="card-text">No, no podré responder.</span>
                     </label>
                 </div>
                 <div class="nav-controls" style="margin-top: 25px;">
