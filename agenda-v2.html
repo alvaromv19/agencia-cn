@@ -19,8 +19,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* Evita scrolls raros durante las transiciones */
+            min-height: 100vh;       /* Fallback para navegadores viejos */
+            min-height: 100dvh;      /* iOS: usa la altura visible REAL, sin contar la barra de Safari */
+            overflow-x: hidden;      /* Bloquea solo el desplazamiento horizontal de las animaciones */
             position: relative;
         }
 
