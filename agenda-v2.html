@@ -304,6 +304,113 @@
             margin-top: auto;
             width: 100%;
         }
+
+        /* ===== Selector de País + Teléfono ===== */
+        .phone-wrap { position: relative; margin-bottom: 30px; }
+
+        .phone-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            transition: border-color 0.3s ease;
+        }
+        .phone-field:focus-within { border-color: #f25522; }
+
+        .country-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 12px 4px 12px 0;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .country-trigger .flag { font-size: 1.5rem; line-height: 1; }
+        .country-trigger .dial { font-weight: 600; }
+        .country-trigger .chevron { font-size: 0.7rem; color: #8892b0; transition: transform 0.25s ease; }
+        .country-trigger.open .chevron { transform: rotate(180deg); }
+
+        .phone-field input[type="tel"] {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none !important;
+            color: #fff;
+            padding: 12px 0;
+            font-family: inherit;
+            font-size: 1.25rem;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
+        }
+
+        .country-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            width: 100%;
+            max-width: 380px;
+            background: #0a0e17;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+            overflow: hidden;
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .country-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .country-search-wrap { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        #countrySearch {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+            color: #fff;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 16px; /* 16px evita el zoom automático de iOS */
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        #countrySearch:focus { border-color: rgba(242, 85, 34, 0.5); }
+        #countrySearch::placeholder { color: #4a5568; }
+
+        #countryList {
+            list-style: none;
+            max-height: 240px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .country-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            cursor: pointer;
+            color: #cbd5e1;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .country-item:hover,
+        .country-item.highlighted { background: rgba(242, 85, 34, 0.1); color: #fff; }
+        .country-item .ci-flag { font-size: 1.35rem; line-height: 1; flex-shrink: 0; }
+        .country-item .ci-name { flex: 1; font-size: 0.95rem; }
+        .country-item .ci-dial { color: #8892b0; font-size: 0.9rem; font-weight: 600; flex-shrink: 0; }
+        .country-empty { padding: 18px 16px; color: #4a5568; font-size: 0.9rem; text-align: center; }
+        .country-sep { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
+
+        .phone-hint { font-size: 0.8rem; color: #4a5568; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -347,9 +454,23 @@
 
             <div class="step" data-step="3">
                 <div class="step-number">Pregunta 3 de 9 <span>→</span></div>
-                <h2 class="question-title">Introduce tu número de WhatsApp (con código de país) *</h2>
-                <div class="input-wrapper">
-                    <input type="tel" id="whatsapp" required placeholder="+51 999 999 999" autocomplete="tel">
+                <h2 class="question-title">Introduce tu número de WhatsApp *</h2>
+                <div class="phone-wrap">
+                    <div class="phone-field">
+                        <button type="button" class="country-trigger" id="countryTrigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="flag" id="selectedFlag">🇵🇪</span>
+                            <span class="dial" id="selectedDial">+51</span>
+                            <span class="chevron">▾</span>
+                        </button>
+                        <input type="tel" id="whatsapp" inputmode="numeric" required placeholder="999 999 999" autocomplete="tel-national">
+                    </div>
+                    <div class="country-dropdown" id="countryDropdown" role="listbox">
+                        <div class="country-search-wrap">
+                            <input type="text" id="countrySearch" class="no-advance" placeholder="Buscar país..." autocomplete="off">
+                        </div>
+                        <ul id="countryList"></ul>
+                    </div>
+                    <p class="phone-hint">Elige tu país y escribe tu número <strong>sin</strong> el código.</p>
                 </div>
                 <div class="nav-controls">
                     <button type="button" class="next-button" onclick="nextStep(3)">Ok</button>
@@ -499,7 +620,7 @@ function nextStep(currentStepNum) {
     }, 400);
 }
 
-document.querySelectorAll('.step input').forEach(input => {
+document.querySelectorAll('.step input:not(.no-advance)').forEach(input => {
     input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -518,6 +639,152 @@ document.querySelectorAll('.auto-advance').forEach(radio => {
     });
 });
 
+/* ===== Selector de país (banderita + código internacional) ===== */
+const COUNTRIES = [
+    { n: 'Perú', iso: 'PE', d: '+51' },
+    { n: 'México', iso: 'MX', d: '+52' },
+    { n: 'Colombia', iso: 'CO', d: '+57' },
+    { n: 'Argentina', iso: 'AR', d: '+54' },
+    { n: 'Chile', iso: 'CL', d: '+56' },
+    { n: 'Ecuador', iso: 'EC', d: '+593' },
+    { n: 'España', iso: 'ES', d: '+34' },
+    { n: 'Estados Unidos', iso: 'US', d: '+1' },
+    { n: 'Bolivia', iso: 'BO', d: '+591' },
+    { n: 'Brasil', iso: 'BR', d: '+55' },
+    { n: 'Canadá', iso: 'CA', d: '+1' },
+    { n: 'Costa Rica', iso: 'CR', d: '+506' },
+    { n: 'Cuba', iso: 'CU', d: '+53' },
+    { n: 'El Salvador', iso: 'SV', d: '+503' },
+    { n: 'Guatemala', iso: 'GT', d: '+502' },
+    { n: 'Honduras', iso: 'HN', d: '+504' },
+    { n: 'Nicaragua', iso: 'NI', d: '+505' },
+    { n: 'Panamá', iso: 'PA', d: '+507' },
+    { n: 'Paraguay', iso: 'PY', d: '+595' },
+    { n: 'Puerto Rico', iso: 'PR', d: '+1' },
+    { n: 'República Dominicana', iso: 'DO', d: '+1' },
+    { n: 'Uruguay', iso: 'UY', d: '+598' },
+    { n: 'Venezuela', iso: 'VE', d: '+58' },
+    { n: 'Alemania', iso: 'DE', d: '+49' },
+    { n: 'Francia', iso: 'FR', d: '+33' },
+    { n: 'Italia', iso: 'IT', d: '+39' },
+    { n: 'Portugal', iso: 'PT', d: '+351' },
+    { n: 'Reino Unido', iso: 'GB', d: '+44' }
+];
+const PRIORITY = ['PE', 'MX', 'CO', 'AR', 'CL', 'EC', 'ES', 'US'];
+
+const ctTrigger = document.getElementById('countryTrigger');
+const ctDropdown = document.getElementById('countryDropdown');
+const ctList = document.getElementById('countryList');
+const ctSearch = document.getElementById('countrySearch');
+const selFlag = document.getElementById('selectedFlag');
+const selDial = document.getElementById('selectedDial');
+const phoneInput = document.getElementById('whatsapp');
+
+function flagEmoji(iso) {
+    return iso.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+}
+
+function appendCountryItems(arr) {
+    arr.forEach(c => {
+        const li = document.createElement('li');
+        li.className = 'country-item';
+        li.setAttribute('role', 'option');
+        li.dataset.iso = c.iso;
+        li.innerHTML = '<span class="ci-flag">' + flagEmoji(c.iso) + '</span>' +
+                       '<span class="ci-name">' + c.n + '</span>' +
+                       '<span class="ci-dial">' + c.d + '</span>';
+        li.addEventListener('click', () => selectCountry(c));
+        ctList.appendChild(li);
+    });
+}
+
+function renderCountryList(filter) {
+    const q = (filter || '').trim().toLowerCase();
+    ctList.innerHTML = '';
+    if (!q) {
+        const pri = PRIORITY.map(iso => COUNTRIES.find(c => c.iso === iso)).filter(Boolean);
+        const rest = COUNTRIES.filter(c => !PRIORITY.includes(c.iso))
+                              .sort((a, b) => a.n.localeCompare(b.n, 'es'));
+        appendCountryItems(pri);
+        const sep = document.createElement('div');
+        sep.className = 'country-sep';
+        ctList.appendChild(sep);
+        appendCountryItems(rest);
+    } else {
+        const matches = COUNTRIES.filter(c =>
+            c.n.toLowerCase().includes(q) || c.d.includes(q) || c.iso.toLowerCase() === q
+        ).sort((a, b) => a.n.localeCompare(b.n, 'es'));
+        if (matches.length === 0) {
+            const e = document.createElement('div');
+            e.className = 'country-empty';
+            e.textContent = 'Sin resultados';
+            ctList.appendChild(e);
+        } else {
+            appendCountryItems(matches);
+        }
+    }
+}
+
+function setCountry(c) {
+    selFlag.textContent = flagEmoji(c.iso);
+    selDial.textContent = c.d;
+}
+function selectCountry(c) {
+    setCountry(c);
+    closeDropdown();
+    phoneInput.focus();
+}
+function openDropdown() {
+    ctDropdown.classList.add('open');
+    ctTrigger.classList.add('open');
+    ctTrigger.setAttribute('aria-expanded', 'true');
+    ctSearch.value = '';
+    renderCountryList('');
+    setTimeout(() => ctSearch.focus(), 50);
+}
+function closeDropdown() {
+    ctDropdown.classList.remove('open');
+    ctTrigger.classList.remove('open');
+    ctTrigger.setAttribute('aria-expanded', 'false');
+}
+
+ctTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    ctDropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+});
+ctSearch.addEventListener('input', () => renderCountryList(ctSearch.value));
+ctSearch.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = ctList.querySelector('.country-item');
+        if (first) {
+            const c = COUNTRIES.find(x => x.iso === first.dataset.iso);
+            if (c) selectCountry(c);
+        }
+    } else if (e.key === 'Escape') {
+        closeDropdown();
+        phoneInput.focus();
+    }
+});
+document.addEventListener('click', (e) => {
+    if (ctDropdown.classList.contains('open') &&
+        !ctDropdown.contains(e.target) && !ctTrigger.contains(e.target)) {
+        closeDropdown();
+    }
+});
+
+// Detecta el país por la región del navegador (si falla, queda Perú por defecto)
+(function detectCountry() {
+    try {
+        const lang = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+        const region = lang.split('-')[1];
+        if (region) {
+            const m = COUNTRIES.find(c => c.iso === region.toUpperCase());
+            if (m) setCountry(m);
+        }
+    } catch (e) { /* se mantiene Perú */ }
+})();
+
 // ENVÍO DEL FORMULARIO Y CONEXIÓN CON N8N / GHL
 document.getElementById('dynamicForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -533,11 +800,16 @@ document.getElementById('dynamicForm').addEventListener('submit', function(e) {
     // Detecta la versión del A/B test según la ruta. /agenda-v2 -> landing-v2, cualquier otra -> landing-v1
     const landingTag = window.location.pathname.includes('v2') ? 'landing-v2' : 'landing-v1';
 
+    // Combina el código de país elegido + el número nacional en formato internacional (E.164)
+    const dialCode = document.getElementById('selectedDial').textContent.trim();
+    const nationalNumber = document.getElementById('whatsapp').value.replace(/\D/g, '');
+    const fullPhone = dialCode + nationalNumber;
+
     // Mapeo exacto estructurado con las claves nativas de tu GHL
     const ghlPayload = {
         first_name: document.getElementById('nombre').value,
         email: document.getElementById('email').value,
-        phone: document.getElementById('whatsapp').value,
+        phone: fullPhone,
         landing_version: landingTag,
         cual_es_tu_objetivo_al_adquirir_un_negocio_digital_ya_validado_ej_generar_flujo_de_caja_mensual_diversificar_ingresos_reemplazar_ingresos_actuales_escalar_con_publicidad_etc: document.getElementById('objetivo').value,
         entendes_que_este_modelo_consiste_en_adquirir_negocios_ya_validados_y_no_en_elegir_ideas_o_nichos_a_gusto_personal: document.querySelector('input[name="q_modelo"]:checked').value,
