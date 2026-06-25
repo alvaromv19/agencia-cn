@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bandeja · Creamos Negocios</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #eae6df;
+    --panel: #ffffff;
+    --panel-2: #f0f2f5;
+    --header: #f0f2f5;
+    --text: #111b21;
+    --text-soft: #667781;
+    --line: #e9edef;
+    --accent: #00a884;
+    --accent-deep: #008069;
+    --bubble-in: #ffffff;
+    --bubble-out: #d9fdd3;
+    --bubble-out-deep: #c5f1bd;
+    --shadow: 0 1px 2px rgba(11,20,26,.08);
+    --chat-bg: #efeae2;
+    --unread: #25d366;
+    --danger: #e5544a;
+  }
+  [data-theme="dark"] {
+    --bg: #0b141a;
+    --panel: #111b21;
+    --panel-2: #202c33;
+    --header: #202c33;
+    --text: #e9edef;
+    --text-soft: #8696a0;
+    --line: #222e35;
+    --accent: #00a884;
+    --accent-deep: #00a884;
+    --bubble-in: #202c33;
+    --bubble-out: #005c4b;
+    --bubble-out-deep: #025144;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+    --chat-bg: #0b141a;
+    --unread: #25d366;
+    --danger: #f15c6d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    transition: background .2s, color .2s;
+  }
+
+  /* ===== Login gate ===== */
+  #gate {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--accent-deep);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gate-card {
+    background: var(--panel); border-radius: 16px; padding: 40px 36px;
+    width: 90%; max-width: 380px; box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    text-align: center;
+  }
+  .gate-card .logo {
+    width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 18px;
+    background: var(--accent); display:flex; align-items:center; justify-content:center;
+  }
+  .gate-card .logo svg { width: 34px; height: 34px; fill: #fff; }
+  .gate-card h1 { font-size: 21px; font-weight: 700; margin-bottom: 6px; }
+  .gate-card p { color: var(--text-soft); font-size: 14px; margin-bottom: 24px; }
+  .gate-card input {
+    width: 100%; padding: 13px 15px; border: 2px solid var(--line);
+    border-radius: 10px; font-size: 15px; background: var(--panel-2); color: var(--text);
+    outline: none; margin-bottom: 16px; transition: border-color .15s;
+  }
+  .gate-card input:focus { border-color: var(--accent); }
+  .gate-card button {
+    width: 100%; padding: 13px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .gate-card button:hover { background: var(--accent-deep); }
+
+  /* ===== Layout ===== */
+  #app { display: none; height: 100vh; }
+  .shell {
+    display: grid; grid-template-columns: minmax(300px, 30%) 1fr;
+    height: 100vh; max-width: 1600px; margin: 0 auto;
+    background: var(--panel); box-shadow: 0 0 14px rgba(0,0,0,.06);
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; background: var(--panel); }
+  .side-head {
+    height: 60px; background: var(--header); display: flex; align-items: center;
+    justify-content: space-between; padding: 0 16px; flex-shrink: 0;
+  }
+  .me { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .me .avatar {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--accent);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 15px; flex-shrink: 0;
+  }
+  .me .who { font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .me .who small { display: block; font-weight: 400; color: var(--text-soft); font-size: 11px; }
+  .head-actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 38px; height: 38px; border: none; background: transparent; cursor: pointer;
+    border-radius: 50%; color: var(--text-soft); display: flex; align-items: center;
+    justify-content: center; transition: background .15s;
+  }
+  .icon-btn:hover { background: var(--panel-2); }
+  .icon-btn svg { width: 21px; height: 21px; fill: currentColor; }
+
+  .search-wrap { padding: 8px 12px; background: var(--panel); flex-shrink: 0; }
+  .search-box {
+    background: var(--panel-2); border-radius: 9px; display: flex; align-items: center;
+    padding: 0 12px; height: 38px; gap: 10px;
+  }
+  .search-box svg { width: 17px; height: 17px; fill: var(--text-soft); flex-shrink: 0; }
+  .search-box input {
+    border: none; background: transparent; outline: none; color: var(--text);
+    font-size: 14px; width: 100%;
+  }
+
+  .convos { flex: 1; overflow-y: auto; }
+  .convo {
+    display: flex; align-items: center; gap: 13px; padding: 11px 14px; cursor: pointer;
+    border-bottom: 1px solid var(--line); transition: background .12s; position: relative;
+  }
+  .convo:hover { background: var(--panel-2); }
+  .convo.active { background: var(--panel-2); }
+  .convo .avatar {
+    width: 49px; height: 49px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+    font-weight: 600; font-size: 18px;
+  }
+  .convo .meta { flex: 1; min-width: 0; }
+  .convo .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .convo .name { font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .convo .time { font-size: 12px; color: var(--text-soft); flex-shrink: 0; }
+  .convo .row2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 3px; }
+  .convo .preview { font-size: 13.5px; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+  .convo .badge {
+    background: var(--unread); color: #fff; font-size: 11px; font-weight: 600;
+    min-width: 19px; height: 19px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; padding: 0 6px; flex-shrink: 0;
+  }
+  .preview .dir { color: var(--accent); font-weight: 600; }
+
+  /* ===== Chat ===== */
+  .chat { display: flex; flex-direction: column; min-width: 0; background: var(--chat-bg); position: relative; }
+  .chat-bg-pattern {
+    position: absolute; inset: 0; opacity: .04; pointer-events: none;
+    background-image: radial-gradient(circle, var(--text) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .chat-head {
+    height: 60px; background: var(--header); display: flex; align-items: center;
+    padding: 0 16px; gap: 13px; flex-shrink: 0; z-index: 2; border-left: 1px solid var(--line);
+  }
+  .chat-head .avatar {
+    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; color: #fff; font-weight: 600; flex-shrink: 0;
+  }
+  .chat-head .info { flex: 1; min-width: 0; }
+  .chat-head .info .n { font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-head .info .s { font-size: 12.5px; color: var(--text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .messages { flex: 1; overflow-y: auto; padding: 18px 8%; z-index: 1; display: flex; flex-direction: column; gap: 3px; }
+  .day-sep { text-align: center; margin: 14px 0; }
+  .day-sep span {
+    background: var(--panel); color: var(--text-soft); font-size: 12px; font-weight: 500;
+    padding: 5px 12px; border-radius: 8px; box-shadow: var(--shadow);
+  }
+  .msg { max-width: 65%; padding: 6px 9px 8px; border-radius: 8px; box-shadow: var(--shadow); position: relative; font-size: 14.2px; line-height: 1.32; word-wrap: break-word; }
+  .msg .body { white-space: pre-wrap; }
+  .msg .stamp { font-size: 11px; color: var(--text-soft); float: right; margin: 6px 0 -2px 10px; display: flex; align-items: center; gap: 3px; }
+  .msg.in { align-self: flex-start; background: var(--bubble-in); border-top-left-radius: 2px; }
+  .msg.out { align-self: flex-end; background: var(--bubble-out); border-top-right-radius: 2px; }
+  .msg .sender { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 2px; }
+  .tick { width: 15px; height: 15px; fill: var(--text-soft); }
+  .tick.read { fill: #53bdeb; }
+
+  .compose { padding: 10px 16px; background: var(--header); display: flex; align-items: flex-end; gap: 10px; z-index: 2; flex-shrink: 0; }
+  .compose textarea {
+    flex: 1; resize: none; border: none; border-radius: 10px; padding: 11px 15px;
+    font-size: 15px; font-family: inherit; background: var(--panel); color: var(--text);
+    outline: none; max-height: 120px; line-height: 1.4;
+  }
+  .send-btn {
+    width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--accent);
+    color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .15s, transform .1s;
+  }
+  .send-btn:hover { background: var(--accent-deep); }
+  .send-btn:active { transform: scale(.92); }
+  .send-btn:disabled { opacity: .5; cursor: default; }
+  .send-btn svg { width: 23px; height: 23px; fill: #fff; }
+
+  .window-warn {
+    background: #fff3cd; color: #856404; font-size: 12.5px; text-align: center;
+    padding: 7px 16px; z-index: 2;
+  }
+  [data-theme="dark"] .window-warn { background: #3a2f1a; color: #f0d488; }
+
+  .empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--text-soft); text-align: center; padding: 40px; z-index: 1;
+  }
+  .empty svg { width: 90px; height: 90px; fill: var(--line); margin-bottom: 22px; }
+  .empty h2 { font-size: 22px; font-weight: 600; color: var(--text-soft); margin-bottom: 8px; }
+  .empty p { font-size: 14px; max-width: 380px; line-height: 1.5; }
+
+  .loading-convos { padding: 30px; text-align: center; color: var(--text-soft); font-size: 14px; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--danger); color: #fff; padding: 11px 20px; border-radius: 9px;
+    font-size: 14px; z-index: 200; box-shadow: 0 6px 20px rgba(0,0,0,.25); opacity: 0;
+    transition: opacity .2s, transform .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* mobile */
+  @media (max-width: 768px) {
+    .shell { grid-template-columns: 1fr; }
+    .chat { position: fixed; inset: 0; z-index: 10; display: none; }
+    .chat.open { display: flex; }
+    .messages { padding: 14px 5%; }
+    .msg { max-width: 82%; }
+    .back-btn { display: flex !important; }
+  }
+  .back-btn { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Login gate -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20z"/><path d="M16.5 13.8c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.7.9-.1.1-.3.2-.5 0-.2-.1-1-.4-1.8-1.1-.7-.6-1.1-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.3.2-.4 0-.1 0-.3-.1-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5c-.1 0-.4.1-.6.3-.2.2-.8.8-.8 1.9 0 1.1.8 2.2.9 2.4.1.2 1.6 2.5 4 3.4.6.2 1 .4 1.3.5.6.2 1.1.2 1.5.1.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1 0-.1-.2-.2-.4-.3z"/></svg>
+    </div>
+    <h1>Bandeja Creamos Negocios</h1>
+    <p>Ingresá tu nombre para empezar a responder mensajes.</p>
+    <input id="agentName" type="text" placeholder="Tu nombre (ej: Maiko)" autocomplete="off">
+    <button onclick="enterApp()">Entrar</button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="me">
+          <div class="avatar" id="meAvatar">?</div>
+          <div class="who">Bandeja CN<small id="meName">—</small></div>
+        </div>
+        <div class="head-actions">
+          <button class="icon-btn" id="themeBtn" title="Cambiar tema" onclick="toggleTheme()">
+            <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn" title="Recargar" onclick="loadConversations()">
+            <svg viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h7V4z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          <input id="search" type="text" placeholder="Buscar nombre o número" oninput="renderConvos()">
+        </div>
+      </div>
+      <div class="convos" id="convos">
+        <div class="loading-convos">Cargando conversaciones…</div>
+      </div>
+    </aside>
+
+    <!-- Chat -->
+    <section class="chat" id="chat">
+      <div class="chat-bg-pattern"></div>
+      <div class="empty" id="emptyState">
+        <svg viewBox="0 0 24 24"><path d="M19.005 3.175H4.674C3.642 3.175 3 3.789 3 4.821V21.02l3.544-3.514h12.461c1.033 0 2.064-1.06 2.064-2.093V4.821c-.001-1.032-1.032-1.646-2.064-1.646zm-4.989 9.869H7.041V11.1h6.975v1.944zm3-4.99H7.041V6.11h9.975v1.944z"/></svg>
+        <h2>Bandeja de WhatsApp</h2>
+        <p>Elegí una conversación de la izquierda para ver los mensajes y responder desde el número de Creamos Negocios.</p>
+      </div>
+
+      <div id="chatView" style="display:none; flex-direction:column; height:100%;">
+        <div class="chat-head">
+          <button class="icon-btn back-btn" onclick="closeChat()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          </button>
+          <div class="avatar" id="chatAvatar">?</div>
+          <div class="info">
+            <div class="n" id="chatName">—</div>
+            <div class="s" id="chatSub">—</div>
+          </div>
+          <button class="icon-btn" title="Copiar datos para GHL" onclick="copyContact()">
+            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          </button>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="window-warn" id="windowWarn" style="display:none;">
+          Fuera de la ventana de 24 h. WhatsApp solo permite plantillas; tu mensaje libre puede no entregarse.
+        </div>
+
+        <div class="compose">
+          <textarea id="msgInput" rows="1" placeholder="Escribí un mensaje" oninput="autoGrow(this)" onkeydown="onKey(event)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Enviar">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+const SUPABASE_URL = "https://pvqbmzzriekyeivgqxqt.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2cWJtenpyaWVreWVpdmdxeHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTQyNjYsImV4cCI6MjA5MDkzMDI2Nn0.Psgio-y5FJFWE976lFjt-6DyyD_UyLTecGski3Raiu4";
+const SEND_WEBHOOK = "https://n8n.creamosnegociosrentables.com/webhook/creamos-negocios-wa-inbox-send";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ===== STATE =====
+let agentName = "";
+let allMessages = [];          // todos los mensajes cargados
+let convos = {};               // agrupados por phone
+let activePhone = null;
+let theme = "light";
+const COLORS = ["#e57373","#ba68c8","#7986cb","#4dd0e1","#4db6ac","#81c784","#ffb74d","#a1887f","#90a4ae","#f06292"];
+
+// ===== LOGIN =====
+function enterApp(){
+  const v = document.getElementById("agentName").value.trim();
+  if(!v){ document.getElementById("agentName").focus(); return; }
+  agentName = v;
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("meName").textContent = v;
+  document.getElementById("meAvatar").textContent = v.charAt(0).toUpperCase();
+  initRealtime();
+  loadConversations();
+}
+document.getElementById("agentName").addEventListener("keydown", e=>{ if(e.key==="Enter") enterApp(); });
+
+// ===== THEME =====
+function toggleTheme(){
+  theme = theme === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme === "dark" ? "dark" : "");
+  document.getElementById("themeIcon").innerHTML = theme === "dark"
+    ? '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-5.4-5.4c0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>'
+    : '<path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>';
+}
+
+// ===== COLORS =====
+function colorFor(phone){
+  let h = 0; for(let i=0;i<phone.length;i++) h = phone.charCodeAt(i) + ((h<<5)-h);
+  return COLORS[Math.abs(h) % COLORS.length];
+}
+function initials(name, phone){
+  if(name && name.trim()){ const p = name.trim().split(" "); return (p[0][0]+(p[1]?p[1][0]:"")).toUpperCase(); }
+  return phone.slice(-2);
+}
+
+// ===== LOAD =====
+async function loadConversations(){
+  try{
+    const { data, error } = await sb
+      .from("wa_inbox_messages")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if(error) throw error;
+    allMessages = data || [];
+    rebuildConvos();
+    renderConvos();
+    if(activePhone) renderMessages();
+  }catch(e){
+    console.error(e);
+    document.getElementById("convos").innerHTML = '<div class="loading-convos">No se pudieron cargar los mensajes. Revisá la conexión.</div>';
+  }
+}
+
+function rebuildConvos(){
+  convos = {};
+  for(const m of allMessages){
+    const p = m.contact_phone;
+    if(!convos[p]) convos[p] = { phone: p, name: null, email: null, ghl_id: null, messages: [], last: null, unread: 0 };
+    convos[p].messages.push(m);
+    if(m.contact_name && m.contact_name !== "amigo") convos[p].name = m.contact_name;
+    if(m.contact_email) convos[p].email = m.contact_email;
+    if(m.ghl_contact_id) convos[p].ghl_id = m.ghl_contact_id;
+    convos[p].last = m;
+  }
+}
+
+// ===== RENDER CONVO LIST =====
+function renderConvos(){
+  const term = document.getElementById("search").value.toLowerCase().trim();
+  const list = Object.values(convos).sort((a,b)=> new Date(b.last.created_at) - new Date(a.last.created_at));
+  const box = document.getElementById("convos");
+  const filtered = list.filter(c=>{
+    if(!term) return true;
+    return (c.name||"").toLowerCase().includes(term) || c.phone.includes(term);
+  });
+  if(filtered.length === 0){ box.innerHTML = '<div class="loading-convos">Sin conversaciones todavía.</div>'; return; }
+  box.innerHTML = filtered.map(c=>{
+    const display = c.name || ("+"+c.phone);
+    const prevDir = c.last.direction === "outbound" ? '<span class="dir">✓ </span>' : '';
+    const body = (c.last.body||"").replace(/</g,"&lt;");
+    return `<div class="convo ${c.phone===activePhone?'active':''}" onclick="openChat('${c.phone}')">
+      <div class="avatar" style="background:${colorFor(c.phone)}">${initials(c.name,c.phone)}</div>
+      <div class="meta">
+        <div class="row1"><span class="name">${display.replace(/</g,"&lt;")}</span><span class="time">${shortTime(c.last.created_at)}</span></div>
+        <div class="row2"><span class="preview">${prevDir}${body}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ===== OPEN CHAT =====
+function openChat(phone){
+  activePhone = phone;
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("chatView").style.display = "flex";
+  document.getElementById("chat").classList.add("open");
+  const c = convos[phone];
+  document.getElementById("chatName").textContent = c.name || ("+"+phone);
+  document.getElementById("chatSub").textContent = c.name ? ("+"+phone + (c.email? " · "+c.email : "")) : "Número sin nombre en GHL";
+  document.getElementById("chatAvatar").textContent = initials(c.name, phone);
+  document.getElementById("chatAvatar").style.background = colorFor(phone);
+  renderConvos();
+  renderMessages();
+  checkWindow();
+  document.getElementById("msgInput").focus();
+}
+function closeChat(){ document.getElementById("chat").classList.remove("open"); activePhone=null; renderConvos(); }
+
+// ===== RENDER MESSAGES =====
+function renderMessages(){
+  if(!activePhone) return;
+  const c = convos[activePhone];
+  const box = document.getElementById("messages");
+  let html = ""; let lastDay = "";
+  for(const m of c.messages){
+    const day = dayLabel(m.created_at);
+    if(day !== lastDay){ html += `<div class="day-sep"><span>${day}</span></div>`; lastDay = day; }
+    const out = m.direction === "outbound";
+    const sender = out && m.sent_by && m.sent_by!=="lead" && m.sent_by!=="ia" && m.sent_by!=="sistema"
+      ? `<div class="sender">${(m.sent_by||"").replace(/</g,"&lt;")}</div>` : "";
+    const iaTag = (m.sent_by==="ia") ? `<div class="sender">🤖 IA</div>` : "";
+    let tick = "";
+    if(out){
+      const cls = m.status==="read" ? "tick read" : "tick";
+      tick = m.status==="failed"
+        ? '<span style="color:var(--danger);font-size:11px">✕ falló</span>'
+        : `<svg class="${cls}" viewBox="0 0 18 18"><path d="M17.4 5.5l-1-1-7.1 7.1-.7-.7-1 1 1.7 1.7 8.1-8.1zm-4 0l-1-1-5.1 5.1-2-2-1 1 3 3 6.1-6.1z"/></svg>`;
+    }
+    html += `<div class="msg ${out?'out':'in'}">
+      ${sender}${iaTag}<span class="body">${(m.body||"").replace(/</g,"&lt;")}</span>
+      <span class="stamp">${shortTime(m.created_at)}${tick}</span>
+    </div>`;
+  }
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+}
+
+// ===== 24h WINDOW =====
+function checkWindow(){
+  const c = convos[activePhone];
+  const lastIn = [...c.messages].reverse().find(m=>m.direction==="inbound");
+  let open = false;
+  if(lastIn){ open = (Date.now() - new Date(lastIn.created_at)) < 24*3600*1000; }
+  document.getElementById("windowWarn").style.display = open ? "none" : "block";
+}
+
+// ===== SEND =====
+async function sendMessage(){
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
+  if(!text || !activePhone) return;
+  const c = convos[activePhone];
+  const btn = document.getElementById("sendBtn");
+  btn.disabled = true;
+
+  // optimista: pintar el mensaje ya
+  const optimistic = {
+    contact_phone: activePhone, contact_name: c.name, direction:"outbound",
+    body:text, status:"sent", sent_by:agentName, created_at:new Date().toISOString(),
+    _optimistic:true
+  };
+  c.messages.push(optimistic); c.last = optimistic;
+  input.value=""; autoGrow(input); renderMessages(); renderConvos();
+
+  try{
+    const res = await fetch(SEND_WEBHOOK, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        phone: activePhone, message: text, agent_name: agentName,
+        contact_name: c.name||"", ghl_contact_id: c.ghl_id||""
+      })
+    });
+    const out = await res.json().catch(()=>({}));
+    if(out && out.status === "failed"){
+      optimistic.status = "failed"; renderMessages();
+      showToast("WhatsApp rechazó el mensaje (ventana de 24 h o número inválido).");
+    }
+  }catch(e){
+    optimistic.status = "failed"; renderMessages();
+    showToast("No se pudo enviar. Revisá la conexión.");
+  }finally{
+    btn.disabled = false; input.focus();
+  }
+}
+function onKey(e){ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); } }
+function autoGrow(el){ el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,120)+"px"; }
+
+// ===== REALTIME =====
+function initRealtime(){
+  sb.channel("wa_inbox_rt")
+    .on("postgres_changes", { event:"INSERT", schema:"public", table:"wa_inbox_messages" }, payload=>{
+      const m = payload.new;
+      // evitar duplicar el optimista propio
+      if(m.direction==="outbound"){
+        const c = convos[m.contact_phone];
+        if(c){ const opt = c.messages.find(x=>x._optimistic && x.body===m.body);
+          if(opt){ Object.assign(opt, m); delete opt._optimistic; rebuildConvos(); renderConvos(); if(activePhone===m.contact_phone) renderMessages(); return; } }
+      }
+      allMessages.push(m);
+      rebuildConvos(); renderConvos();
+      if(activePhone === m.contact_phone){ renderMessages(); checkWindow(); }
+    })
+    .subscribe();
+}
+
+// ===== UTILS =====
+function shortTime(iso){ const d=new Date(iso); return d.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"}); }
+function dayLabel(iso){
+  const d=new Date(iso), now=new Date();
+  const sameDay=(a,b)=>a.toDateString()===b.toDateString();
+  if(sameDay(d,now)) return "Hoy";
+  const y=new Date(now); y.setDate(now.getDate()-1);
+  if(sameDay(d,y)) return "Ayer";
+  return d.toLocaleDateString("es",{day:"2-digit",month:"long",year:"numeric"});
+}
+function copyContact(){
+  const c=convos[activePhone];
+  const txt=`Nombre: ${c.name||"(sin nombre)"}\nTeléfono: +${c.phone}\nEmail: ${c.email||"(sin email)"}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast("Datos copiados",true));
+}
+function showToast(msg, ok){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.style.background = ok? "var(--accent)":"var(--danger)";
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2600);
+}
+</script>
+</body>
+</html>
