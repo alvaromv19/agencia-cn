@@ -227,6 +227,18 @@
   .compose textarea { width: 100%; resize: none; border: none; padding: 6px 0; font-size: 15px; font-family: inherit; background: transparent; color: var(--text-main); outline: none; max-height: 120px; line-height: 20px; }
   .send-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--icon-color); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .send-btn.typing { color: var(--accent); }
+  .attach-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--icon-color); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .attach-btn:hover { background: var(--panel-bg); }
+  .attach-btn svg { width: 24px; height: 24px; fill: currentColor; }
+  .msg.has-media { padding: 4px 4px 6px; }
+  .msg.has-media .body { padding: 2px 6px 0; display: block; }
+  .m-img { max-width: 280px; max-height: 320px; border-radius: 6px; cursor: pointer; display: block; }
+  .m-vid { max-width: 280px; max-height: 320px; border-radius: 6px; display: block; }
+  .m-aud { width: 240px; margin: 2px 0; }
+  .m-doc { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(0,0,0,.06); border-radius: 8px; text-decoration: none; color: var(--text-main); min-width: 200px; }
+  [data-theme="dark"] .m-doc { background: rgba(255,255,255,.08); }
+  .m-doc svg { width: 30px; height: 30px; fill: var(--accent); flex-shrink: 0; }
+  .m-doc span { font-size: 14px; word-break: break-word; }
 
   /* ===== Columna 3: Panel Info de Contacto NATIVO ===== */
   .contact-panel {
@@ -372,6 +384,10 @@
         <div class="system-notice-bubble" id="windowWarn" style="display:none;">⚠️ Ventana de 24h cerrada. Meta solo permite plantillas autorizadas.</div>
 
         <div class="compose">
+          <button class="attach-btn" onclick="pickFile()" title="Adjuntar archivo">
+            <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10.5a1 1 0 0 1-2 0V6H10v9.5a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z"/></svg>
+          </button>
+          <input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*,application/pdf" onchange="onFilePicked(event)">
           <div class="compose-input-wrap">
             <textarea id="msgInput" rows="1" placeholder="Escribe un mensaje" oninput="autoGrow(this)" onkeydown="onKey(event)"></textarea>
           </div>
@@ -553,7 +569,9 @@ function renderMessages(){
     const sender = out && m.sent_by && !["lead","ia","sistema"].includes(m.sent_by) ? `<div class="sender">${m.sent_by}</div>` : '';
     const ia = m.sent_by === "ia" ? `<div class="sender">🤖 Agente CN IA</div>` : '';
     const tick = out ? `<svg class="tick ${m.status==='read'?'read':''}" viewBox="0 0 18 18"><path d="M17.4 5.5l-1-1-7.1 7.1-.7-.7-1 1 1.7 1.7 8.1-8.1zm-4 0l-1-1-5.1 5.1-2-2-1 1 3 3 6.1-6.1z"/></svg>` : '';
-    html += `<div class="msg ${out?'out':'in'}">${sender}${ia}<span class="body">${m.body||""}</span><span class="stamp">${shortTime(m.created_at)}${tick}</span></div>`;
+    const media = renderMedia(m);
+    const bodyTxt = (m.body && !(m.message_type && m.message_type!=='text' && (m.body==='📷 Imagen'||m.body==='🎤 Nota de voz'||m.body==='🎥 Video'))) ? `<span class="body">${escapeHtml(m.body)}</span>` : '';
+    html += `<div class="msg ${out?'out':'in'} ${m.message_type && m.message_type!=='text' ? 'has-media':''}">${sender}${ia}${media}${bodyTxt}<span class="stamp">${shortTime(m.created_at)}${tick}</span></div>`;
   });
   const box = document.getElementById("messages"); box.innerHTML = html; box.scrollTop = box.scrollHeight;
 }
@@ -572,11 +590,69 @@ async function sendMessage(){
   fetch(SEND_WEBHOOK, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ phone: activePhone, message: text, agent_name: agentName, ghl_contact_id: c.ghl_id||"" }) });
 }
 
+function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function renderMedia(m){
+  if(!m.message_type || m.message_type==='text' || !m.media_url) return '';
+  const url = m.media_url;
+  if(m.message_type==='image')
+    return `<img class="m-img" src="${url}" loading="lazy" onclick="window.open('${url}','_blank')" alt="imagen">`;
+  if(m.message_type==='video')
+    return `<video class="m-vid" src="${url}" controls preload="metadata"></video>`;
+  if(m.message_type==='audio')
+    return `<audio class="m-aud" src="${url}" controls preload="none"></audio>`;
+  if(m.message_type==='document'){
+    const name = (m.body||'Documento').replace('📄 ','');
+    return `<a class="m-doc" href="${url}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+      <span>${escapeHtml(name)}</span></a>`;
+  }
+  return '';
+}
+
+function mimeToType(mime){
+  if(!mime) return 'document';
+  if(mime.startsWith('image/')) return 'image';
+  if(mime.startsWith('video/')) return 'video';
+  if(mime.startsWith('audio/')) return 'audio';
+  return 'document';
+}
+
+function pickFile(){ document.getElementById("fileInput").click(); }
+
+async function onFilePicked(ev){
+  const file = ev.target.files[0];
+  if(!file || !activePhone) return;
+  ev.target.value = "";
+  const mediaType = mimeToType(file.type);
+  const caption = document.getElementById("msgInput").value.trim();
+  showToast("Subiendo archivo…", true);
+
+  // 1) subir a Supabase Storage
+  const ext = (file.name.split('.').pop()||'bin').toLowerCase();
+  const path = `${activePhone}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error: upErr } = await sb.storage.from("wa-media").upload(path, file, { contentType: file.type, upsert: true });
+  if(upErr){ showToast("No se pudo subir el archivo"); return; }
+  const { data: pub } = sb.storage.from("wa-media").getPublicUrl(path);
+  const mediaUrl = pub.publicUrl;
+
+  // 2) pintar optimista
+  const c = convos[activePhone];
+  const opt = { contact_phone: activePhone, direction:"outbound", body: caption||"", media_url: mediaUrl, media_mime: file.type, message_type: mediaType, status:"sent", sent_by: agentName, created_at: new Date().toISOString(), _opt:true };
+  c.messages.push(opt); c.last = opt;
+  document.getElementById("msgInput").value=""; renderMessages(); renderConvos();
+
+  // 3) enviar via webhook
+  fetch(SEND_WEBHOOK, { method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ phone: activePhone, message: caption, agent_name: agentName, ghl_contact_id: c.ghl_id||"", media_url: mediaUrl, media_type: mediaType, media_mime: file.type })
+  });
+}
+
 function initRealtime(){
   sb.channel("inbox_rt").on("postgres_changes", { event: "INSERT", schema: "public", table: "wa_inbox_messages" }, p => {
     const m = p.new, c = convos[m.contact_phone];
     if(m.direction === "outbound" && c){
-      const opt = c.messages.find(x => x._opt && x.body === m.body);
+      const opt = c.messages.find(x => x._opt && (x.body === m.body) && ((x.media_url||"")===(m.media_url||"")));
       if(opt){ Object.assign(opt, m); delete opt._opt; renderConvos(); if(activePhone===m.contact_phone) renderMessages(); return; }
     }
     allMessages.push(m); rebuildConvos(); renderConvos();
