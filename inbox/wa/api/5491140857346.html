@@ -309,6 +309,42 @@
 
   .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 4px; font-size: 14px; z-index: 200; opacity: 0; transition: .2s; pointer-events: none; }
   .toast.show { opacity: 1; }
+/* ===== RESPONSIVE MÓVIL ===== */
+  .back-btn { display: none; }
+  @media (max-width: 768px) {
+    body { align-items: stretch; }
+    #app { height: 100dvh; }
+    .bg-decoration { display: none; }
+    .shell { flex-direction: row; }
+
+    /* Sidebar ocupa toda la pantalla */
+    .sidebar { width: 100%; border-right: none; }
+
+    /* Chat oculto por defecto; se muestra al abrir una conversación */
+    .chat {
+      position: fixed; inset: 0; z-index: 20;
+      display: none;
+    }
+    .chat.mobile-open { display: flex; }
+
+    /* Botón atrás visible solo en móvil */
+    .back-btn { display: flex !important; }
+
+    /* Panel de info a pantalla completa en móvil */
+    .contact-panel {
+      position: fixed; inset: 0; z-index: 30;
+      width: 0;
+    }
+    .contact-panel.open { width: 100%; }
+
+    /* Mensajes con menos padding lateral en móvil */
+    .messages { padding: 14px 4%; }
+    .msg { max-width: 82%; }
+
+    /* Chat header más compacto */
+    .chat-head { padding: 0 10px; }
+  }
+  
 </style>
 </head>
 <body>
@@ -337,6 +373,7 @@
         <div class="head-actions">
           <button class="icon-btn" id="themeBtn" onclick="toggleTheme()"><svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
           <button class="icon-btn" onclick="loadConversations()"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h7V4z"/></svg></button>
+          <button class="icon-btn" onclick="logoutAgent()" title="Cambiar de agente"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg></button>
         </div>
       </div>
 
@@ -367,6 +404,9 @@
 
       <div id="chatView" style="display:none; flex-direction:column; height:100%; position:relative; z-index:1;">
         <div class="chat-head">
+          <button class="icon-btn back-btn" onclick="closeChatMobile()" title="Volver">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          </button>
           <div class="clickable-profile" onclick="toggleInfoPanel()">
             <div class="avatar" id="chatAvatar">?</div>
             <div class="info">
@@ -446,6 +486,22 @@ const SEND_WEBHOOK = "https://n8n.creamosnegociosrentables.com/webhook/creamos-n
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let agentName="", allMessages=[], convos={}, activePhone=null, theme="light", currentTab="todos", isInfoOpen=false;
+
+// Cache de sesión (persiste entre recargas)
+const LS = { name: "cn_agent_name", theme: "cn_theme" };
+(function initFromCache(){
+  const savedTheme = localStorage.getItem(LS.theme);
+  if(savedTheme === "dark"){ theme = "dark"; document.documentElement.setAttribute("data-theme","dark"); }
+  const savedName = localStorage.getItem(LS.name);
+  if(savedName){
+    agentName = savedName;
+    // auto-login: saltar el gate
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("agentName").value = savedName;
+      enterApp();
+    });
+  }
+})();
 const COLORS = ["#1f71a3", "#128c7e", "#6f42c1", "#b71c1c", "#e65100", "#004d40", "#283593", "#880e4f"];
 
 const msgInputEl = document.getElementById("msgInput");
@@ -460,6 +516,7 @@ msgInputEl.addEventListener("input", () => {
 function enterApp(){
   const v = document.getElementById("agentName").value.trim();
   if(!v) return; agentName = v;
+  localStorage.setItem(LS.name, v);
   document.getElementById("gate").style.display = "none";
   document.getElementById("app").style.display = "block";
   document.getElementById("meName").textContent = v;
@@ -470,6 +527,7 @@ function enterApp(){
 function toggleTheme(){
   theme = theme === "light" ? "dark" : "light";
   document.documentElement.setAttribute("data-theme", theme === "dark" ? "dark" : "");
+  localStorage.setItem(LS.theme, theme);
 }
 
 function colorFor(p){ let h=0; for(let i=0;i<p.length;i++) h=p.charCodeAt(i)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
@@ -534,11 +592,18 @@ function openChat(p){
   activePhone = p; if(convos[p]) convos[p].unread = 0;
   document.getElementById("emptyState").style.display = "none";
   document.getElementById("chatView").style.display = "flex";
+  document.getElementById("chat").classList.add("mobile-open");
   document.getElementById("chatName").textContent = convos[p].name || ("+" + p);
   document.getElementById("chatAvatar").textContent = initials(convos[p].name, p);
   document.getElementById("chatAvatar").style.background = colorFor(p);
   renderConvos(); renderMessages(); checkWindow();
   if(isInfoOpen) populateInfoPanel();
+}
+
+function closeChatMobile(){
+  document.getElementById("chat").classList.remove("mobile-open");
+  activePhone = null;
+  renderConvos();
 }
 
 function toggleInfoPanel(force) {
@@ -662,7 +727,7 @@ function initRealtime(){
 
 function openInGHL(){
   const c = convos[activePhone];
-  if(c && c.ghl_id) window.open(`app.creamosnegociosrentables.com/v2/location/contacts/detail/${c.ghl_id}`, "_blank");
+  if(c && c.ghl_id) window.open(`https://app.creamosnegociosrentables.com/v2/location/kAUvCbk886WZhWEUnbfZ/contacts/detail/${c.ghl_id}`, "_blank");
   else showToast("Este contacto no tiene ID de GHL asignado");
 }
 
@@ -672,6 +737,10 @@ function copyContact(){ const c=convos[activePhone]; navigator.clipboard.writeTe
 function showToast(m, ok){ const t=document.getElementById("toast"); t.textContent=m; t.style.background=ok?"var(--accent)":"#ea0038"; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"), 2600); }
 function onKey(e){ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); } }
 function autoGrow(el){ el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,120)+"px"; }
+function logoutAgent(){
+  localStorage.removeItem(LS.name);
+  location.reload();
+}
 </script>
 </body>
 </html>
