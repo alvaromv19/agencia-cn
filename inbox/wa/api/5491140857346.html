@@ -787,7 +787,7 @@ async function sendTemplate(name){
   reactSent[activePhone] = true;
   renderMessages(); renderConvos(); renderTemplatePicker();
   fetch(SEND_WEBHOOK, { method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ phone: activePhone, template_name: name, body1: fn, ghl_contact_id: c.ghl_id||"", agent_name: agentName })
+    body: JSON.stringify({ phone: activePhone, template_name: name, body1: fn, ghl_contact_id: c.ghl_id||"", agent_name: agentName, display_body: rendered })  
   });
 }
 </script>
