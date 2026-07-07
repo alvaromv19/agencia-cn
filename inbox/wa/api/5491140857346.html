@@ -434,6 +434,10 @@
           <button class="send-btn" id="sendBtn" onclick="sendMessage()"><svg id="sendIcon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button>
         </div>
       </div>
+      <div id="templatePicker" style="display:none; padding:10px 12px; background:var(--panel-header); border-top:1px solid rgba(0,0,0,.08);">
+  <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">Fuera de la ventana de 24h — Meta solo permite plantillas autorizadas:</div>
+  <div id="templateList"></div>
+</div>
     </section>
 
     <aside class="contact-panel" id="contactInfoPanel">
@@ -644,7 +648,11 @@ function renderMessages(){
 function checkWindow(){
   const msgs = convos[activePhone].messages;
   const lastIn = [...msgs].reverse().find(m => m.direction === "inbound");
-  document.getElementById("windowWarn").style.display = (!lastIn || (Date.now() - new Date(lastIn.created_at)) > 86400000) ? "block" : "none";
+  const closed = !lastIn || (Date.now() - new Date(lastIn.created_at)) > 86400000;
+  document.getElementById("windowWarn").style.display = closed ? "block" : "none";
+  document.querySelector(".compose").style.display = closed ? "none" : "flex";
+  document.getElementById("templatePicker").style.display = closed ? "block" : "none";
+  if(closed){ renderTemplatePicker(); } else { delete reactSent[activePhone]; }
 }
 
 async function sendMessage(){
@@ -740,6 +748,46 @@ function autoGrow(el){ el.style.height="auto"; el.style.height=Math.min(el.scrol
 function logoutAgent(){
   localStorage.removeItem(LS.name);
   location.reload();
+}
+  const REACTIVATION_TEMPLATES = [
+  { name: "reactivacion_chat_24h",    body: "Hola {{1}}, ¿Cómo estás?" },
+  { name: "reactivacion_chat_24h_v2", body: "Hola {{1}}, quedó pendiente tu llamada con Creamos Negocios. ¿Seguís interesado en avanzar? Respondé por acá y lo vemos." }
+];
+const reactSent = {}; // evita reenvío en la misma sesión
+
+function firstNameOf(c){ return ((c.name||"").trim().split(/\s+/)[0]) || "amigo"; }
+
+function renderTemplatePicker(){
+  const c = convos[activePhone]; if(!c) return;
+  const list = document.getElementById("templateList");
+  if(reactSent[activePhone]){
+    list.innerHTML = `<div style="font-size:13px; color:var(--text-secondary); padding:6px;">✓ Plantilla enviada. Esperando la respuesta del lead para reabrir la conversación.</div>`;
+    return;
+  }
+  const fn = firstNameOf(c);
+  list.innerHTML = REACTIVATION_TEMPLATES.map(t => {
+    const preview = escapeHtml(t.body.replace(/\{\{1\}\}/g, fn));
+    return `<div style="background:var(--panel-bg); border:1px solid rgba(0,0,0,.08); border-radius:8px; padding:10px; margin-bottom:8px;">
+      <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">${t.name}</div>
+      <div style="font-size:14px; color:var(--text-main); margin-bottom:8px;">${preview}</div>
+      <button onclick="sendTemplate('${t.name}')" style="background:#25d366; color:#fff; border:none; border-radius:6px; padding:7px 16px; font-size:13px; cursor:pointer;">Enviar</button>
+    </div>`;
+  }).join("");
+}
+
+async function sendTemplate(name){
+  if(!activePhone) return;
+  const c = convos[activePhone];
+  const t = REACTIVATION_TEMPLATES.find(x => x.name === name); if(!t) return;
+  const fn = firstNameOf(c);
+  const rendered = t.body.replace(/\{\{1\}\}/g, fn);
+  const opt = { contact_phone: activePhone, direction:"outbound", body: rendered, status:"sent", sent_by: agentName, created_at: new Date().toISOString(), _opt:true };
+  c.messages.push(opt); c.last = opt;
+  reactSent[activePhone] = true;
+  renderMessages(); renderConvos(); renderTemplatePicker();
+  fetch(SEND_WEBHOOK, { method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ phone: activePhone, template_name: name, body1: fn, ghl_contact_id: c.ghl_id||"", agent_name: agentName })
+  });
 }
 </script>
 </body>
